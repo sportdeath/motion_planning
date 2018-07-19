@@ -1,6 +1,7 @@
 #include <cstdio>
 #include <iostream>
 #include <cmath>
+#include <limits>
 
 #include <png.h>
 #include <Eigen/Dense>

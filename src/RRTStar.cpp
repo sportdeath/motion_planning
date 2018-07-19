@@ -1,4 +1,5 @@
 #include <vector>
+#include <limits>
 
 #include "motion_planning/RRTStar.hpp"
 
