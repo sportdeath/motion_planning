@@ -3,12 +3,7 @@ extern "C" {
 }
 
 #include "motion_planning/Steer.hpp"
-
-struct Pose2D {
-    double x;
-    double y;
-    double theta;
-};
+#include "motion_planning/Pose2D.hpp"
 
 class DubinsSteer : public Steer<Pose2D> {
 private:

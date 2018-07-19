@@ -41,6 +41,18 @@ ExternalProject_Get_Property(eigen_proj SOURCE_DIR)
 include_directories(${SOURCE_DIR})
 set(DEPS ${DEPS} eigen_proj)
 
+# Add PNG
+ExternalProject_Add(png_proj
+    GIT_REPOSITORY git://git.code.sf.net/p/libpng/code
+    UPDATE_COMMAND ""
+    INSTALL_COMMAND ""
+    )
+ExternalProject_Get_Property(png_proj SOURCE_DIR BINARY_DIR)
+include_directories(${SOURCE_DIR})
+link_directories(${BINARY_DIR})
+set(LIBS ${LIBS} png)
+set(DEPS ${DEPS} png_proj)
+
 # Finished adding external projects
 ######################################
 
@@ -49,6 +61,7 @@ include_directories(include)
 
 add_library(motion_planning
     src/DubinsSteer.cpp
+    src/OccupancyGrid2D.cpp
     )
 set(LIBS ${LIBS} motion_planning)
 
