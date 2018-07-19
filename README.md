@@ -7,7 +7,7 @@ To build the library independently do:
     cmake ..
     make
 
-To integrate this project into another CMake project do:
+To integrate this project into another CMake project add the following to ```CMakeLists.txt```:
 
     ExternalProject_Add(motion_planning_proj
         GIT_REPOSITORY https://github.com/sportdeath/motion_planning
