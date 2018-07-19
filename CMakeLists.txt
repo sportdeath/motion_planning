@@ -5,6 +5,7 @@ include(ExternalProject)
 # Add Dubin's Curves
 ExternalProject_Add(dubins_proj
     GIT_REPOSITORY https://github.com/AndrewWalker/Dubins-Curves
+    UPDATE_COMMAND ""
     INSTALL_COMMAND ""
     )
 ExternalProject_Get_Property(dubins_proj SOURCE_DIR BINARY_DIR)
@@ -16,6 +17,7 @@ set(DEPS ${DEPS} dubins_proj)
 # Add Spatial Index
 ExternalProject_Add(spatialindex_proj
     GIT_REPOSITORY https://github.com/libspatialindex/libspatialindex
+    UPDATE_COMMAND ""
     )
 ExternalProject_Get_Property(spatialindex_proj SOURCE_DIR BINARY_DIR)
 include_directories(${SOURCE_DIR}/include)
