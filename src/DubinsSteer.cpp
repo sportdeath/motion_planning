@@ -2,7 +2,7 @@ extern "C" {
 #include <dubins.h>
 }
 
-#include "motion_planning/DubinsSteer.hpp"
+#include "motion_planning/Steer/DubinsSteer.hpp"
 
 bool DubinsSteer::steer(Pose2D start, Pose2D end) {
     double q0[] = {start.x, start.y, start.theta};

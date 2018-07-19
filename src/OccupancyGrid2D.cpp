@@ -5,8 +5,8 @@
 #include <png.h>
 #include <Eigen/Dense>
 
-#include "motion_planning/Pose2D.hpp"
-#include "motion_planning/OccupancyGrid2D.hpp"
+#include "motion_planning/State/Pose2D.hpp"
+#include "motion_planning/Occupancy/OccupancyGrid2D.hpp"
 
 template<class State>
 OccupancyGrid2D<State>::OccupancyGrid2D(std::string mapPngFilename, double resolution_, State origin_) 

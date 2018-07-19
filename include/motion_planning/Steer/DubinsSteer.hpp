@@ -2,8 +2,8 @@ extern "C" {
 #include "dubins.h"
 }
 
-#include "motion_planning/Steer.hpp"
-#include "motion_planning/Pose2D.hpp"
+#include "motion_planning/Steer/Steer.hpp"
+#include "motion_planning/State/Pose2D.hpp"
 
 class DubinsSteer : public Steer<Pose2D> {
 private:

@@ -1,7 +1,7 @@
 #include <iostream>
 
-#include "motion_planning/DubinsSteer.hpp"
-#include "motion_planning/OccupancyGrid2D.hpp"
+#include "motion_planning/Steer/DubinsSteer.hpp"
+#include "motion_planning/Occupancy/OccupancyGrid2D.hpp"
 
 int main() {
     double turning_radius = 1.0;

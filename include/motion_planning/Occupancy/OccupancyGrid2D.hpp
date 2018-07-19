@@ -3,7 +3,7 @@
 #include <png.h>
 #include <Eigen/Dense>
 
-#include "motion_planning/Occupancy.hpp"
+#include "motion_planning/Occupancy/Occupancy.hpp"
 
 template <class State>
 class OccupancyGrid2D : public Occupancy<State> {
