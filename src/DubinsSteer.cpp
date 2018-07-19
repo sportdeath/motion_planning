@@ -1,13 +1,15 @@
 extern "C" {
-#include "dubins.h"
+#include <dubins.h>
 }
 
 #include "motion_planning/DubinsSteer.hpp"
 
-DubinsSteer::DubinsSteer(Pose2D start, Pose2D end, double turning_radius) {
+bool DubinsSteer::steer(Pose2D start, Pose2D end) {
     double q0[] = {start.x, start.y, start.theta};
     double q1[] = {end.x, end.y, end.theta};
-    dubins_shortest_path(&path, q0, q1, turning_radius);
+    int output = dubins_shortest_path(&path, q0, q1, turningRadius);
+
+    return output == 0;
 }
 
 int DubinsSteer::dubinsSampleCallback(double q[3], double x, void * user_data) {

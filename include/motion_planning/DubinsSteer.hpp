@@ -12,6 +12,8 @@ struct Pose2D {
 
 class DubinsSteer : public Steer<Pose2D> {
 private:
+    double turningRadius;
+
     DubinsPath path;
 
     struct DubinsSampleData {
@@ -21,7 +23,9 @@ private:
     static int dubinsSampleCallback(double q[3], double x, void * user_data);
 
 public:
-    DubinsSteer(Pose2D start, Pose2D end, double turningRadius);
+    DubinsSteer(double turningRadius_) : turningRadius(turningRadius_) {};
+
+    bool steer(Pose2D start, Pose2D end);
 
     std::vector<Pose2D> sample(double resolution);
 
