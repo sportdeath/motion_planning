@@ -1,3 +1,6 @@
+#ifndef RRT_STAR_HPP
+#define RRT_STAR_HPP
+
 #include "motion_planning/Steer/Steer.hpp"
 #include "motion_planning/Occupancy/Occupancy.hpp"
 #include "motion_planning/StateSampler/StateSampler.hpp"
@@ -46,3 +49,5 @@ public:
      */
     std::vector<State> getBestPaths(int N);
 };
+
+#endif // RRT_STAR_HPP

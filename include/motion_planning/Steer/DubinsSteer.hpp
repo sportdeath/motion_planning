@@ -1,3 +1,6 @@
+#ifndef DUBINS_STEER_HPP
+#define DUBINS_STEER_HPP
+
 extern "C" {
 #include "dubins.h"
 }
@@ -20,9 +23,11 @@ private:
 public:
     DubinsSteer(double turningRadius_) : turningRadius(turningRadius_) {};
 
-    bool steer(Pose2D start, Pose2D end);
+    bool steer(const Pose2D * start, const Pose2D * end);
 
     std::vector<Pose2D> sample(double resolution);
 
     double cost();
 };
+
+#endif // DUBINS_STEER_HPP

@@ -1,9 +1,13 @@
+#ifndef OCCUPANCY_GRID_2D_HPP
+#define OCCUPANCY_GRID_2D_HPP
+
 #include <string>
 
 #include <png.h>
 #include <Eigen/Dense>
 
 #include "motion_planning/Occupancy/Occupancy.hpp"
+#include "motion_planning/Steer/Steer.hpp"
 
 template <class State>
 class OccupancyGrid2D : public Occupancy<State> {
@@ -17,5 +21,10 @@ public:
     // accounting for error in projection
     OccupancyGrid2D(std::string mapPngFile, double resolution, State origin);
 
-    bool isFree(const State);
+    double occupancyProbability(const State * state);
+    bool isFree(const State * state);
+    bool isUnknown(const State * state);
+    bool isFree(const Steer<State> * steer);
 };
+
+#endif // OCCUPANCY_GRID_2D_HPP

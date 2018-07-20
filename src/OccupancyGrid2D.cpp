@@ -6,6 +6,7 @@
 #include <Eigen/Dense>
 
 #include "motion_planning/State/Pose2D.hpp"
+#include "motion_planning/Steer/Steer.hpp"
 #include "motion_planning/Occupancy/OccupancyGrid2D.hpp"
 
 template<class State>
@@ -56,21 +57,31 @@ OccupancyGrid2D<State>::OccupancyGrid2D(std::string mapPngFilename, double resol
 }
 
 template<>
-bool OccupancyGrid2D<Pose2D>::isFree(const Pose2D state) {
+double OccupancyGrid2D<Pose2D>::occupancyProbability(const Pose2D * state) {
     // @TODO use the origin to compute this
-    double x = state.x;
-    double y = state.y;
+    double x = state -> x;
+    double y = state -> y;
 
     int x_cell = std::round(x/resolution);
     int y_cell = std::round(y/resolution);
 
+    std::cout << "AHH: " <<  std::numeric_limits<png_byte>::min() << std::endl;
+
     if ((0 <= x_cell) and (x_cell < map.cols()) and (0 <= y_cell) and (y_cell < map.rows())) {
         // The cell is in the map, use the value from it
-        return map(x_cell, y_cell) < 128;
+        return 0.;
+        //return map(x_cell, y_cell);
     } else {
         // If the cell is outside of the map, assume it is occupied.
-        return false;
+        // return false;
+        return 0.;
     }
+}
+
+template<>
+bool OccupancyGrid2D<Pose2D>::isFree(const Steer<Pose2D> * steer) {
+    // Sample the state
+    return true;
 }
 
 template class OccupancyGrid2D<Pose2D>;

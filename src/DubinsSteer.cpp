@@ -4,9 +4,9 @@ extern "C" {
 
 #include "motion_planning/Steer/DubinsSteer.hpp"
 
-bool DubinsSteer::steer(Pose2D start, Pose2D end) {
-    double q0[] = {start.x, start.y, start.theta};
-    double q1[] = {end.x, end.y, end.theta};
+bool DubinsSteer::steer(const Pose2D * start, const Pose2D * end) {
+    double q0[] = {start -> x, start -> y, start -> theta};
+    double q1[] = {end -> x, end -> y, end -> theta};
     int output = dubins_shortest_path(&path, q0, q1, turningRadius);
 
     return output == 0;

@@ -1,3 +1,6 @@
+#ifndef STEER_HPP
+#define STEER_HPP
+
 #include <vector>
 
 template <class State>
@@ -9,7 +12,7 @@ public:
      *
      * @returns True iff a valid steer exists.
      */
-    virtual bool steer(State start, State end) = 0;
+    virtual bool steer(const State * start, const State * end) = 0;
 
     /**
      * Samples the steer path until the cost between
@@ -23,3 +26,5 @@ public:
      */
     virtual double cost() = 0;
 };
+
+#endif // STEER_HPP
