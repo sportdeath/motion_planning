@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.1)
 
 project(motion_planning)
 
-set (CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 11)
 
 ######################################
 # Add external projects >
@@ -104,6 +104,14 @@ foreach(_test_file ${TEST_SRC_FILES})
     add_dependencies(${_test_name} ${DEPS})
     target_link_libraries(${_test_name} ${LIBS})
     add_test(${_test_name} ${_test_name})
+endforeach()
+
+# Copy the maps into the build directory
+file(GLOB MAP_FILES test/maps/*.png)
+foreach(_map_file ${MAP_FILES})
+    get_filename_component(_map_name ${_map_file} NAME)
+    message(${_map_name})
+    configure_file(${_map_file} maps/${_map_name} COPYONLY)
 endforeach()
 
 ######################################

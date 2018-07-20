@@ -4,14 +4,24 @@
 
 class OccupancyGrid2DTest : public ::testing::Test {
     public:
-        static constexpr const char* incomplete_map = "/Users/tfh/Documents/motion_planning/test_map.png";
+        static constexpr const char* classroom_incomplete = "maps/classroom_incomplete.png";
 };
 
 TEST_F(OccupancyGrid2DTest, CreateMap) {
-    double resolution = 0.01;
+    double resolution = 0.1;
     Pose2D origin = {.x=0, .y=0, .theta=0};
 
-    OccupancyGrid2D<Pose2D> og(incomplete_map, resolution, origin);
+    OccupancyGrid2D<Pose2D> map(classroom_incomplete, resolution, origin);
+}
+
+TEST_F(OccupancyGrid2DTest, TestOccupancy) {
+    double resolution = 0.1;
+    Pose2D origin = {.x=0, .y=0, .theta=0};
+
+    OccupancyGrid2D<Pose2D> map(classroom_incomplete, resolution, origin);
+
+    Pose2D query = {.x=0, .y=0, .theta=0};
+    map.occupancyProbability(&query);
 }
 
 int main(int argc, char **argv) {

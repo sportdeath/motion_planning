@@ -58,23 +58,24 @@ OccupancyGrid2D<State>::OccupancyGrid2D(std::string mapPngFilename, double resol
 
 template<>
 double OccupancyGrid2D<Pose2D>::occupancyProbability(const Pose2D * state) {
-    // @TODO use the origin to compute this
-    double x = state -> x;
-    double y = state -> y;
+    // Translate the state by the origin
+    double x_trans = state -> x - origin.x;
+    double y_trans = state -> y - origin.y;
 
-    int x_cell = std::round(x/resolution);
-    int y_cell = std::round(y/resolution);
+    // Rotate the state into the map
+    double x_rot = x_trans * cos(origin.theta) - y_trans * sin(origin.theta);
+    double y_rot = x_trans * sin(origin.theta) + y_trans * cos(origin.theta);
 
-    std::cout << "AHH: " <<  std::numeric_limits<png_byte>::min() << std::endl;
+    // Discretize the state into a cell
+    int x_cell = std::round(x_rot/resolution);
+    int y_cell = std::round(y_rot/resolution);
 
     if ((0 <= x_cell) and (x_cell < map.cols()) and (0 <= y_cell) and (y_cell < map.rows())) {
         // The cell is in the map, use the value from it
-        return 0.;
-        //return map(x_cell, y_cell);
+        return map(x_cell, y_cell)/std::numeric_limits<png_byte>::max();
     } else {
-        // If the cell is outside of the map, assume it is occupied.
-        // return false;
-        return 0.;
+        // If the cell is outside of the map, assume it is unknown
+        return 0.5;
     }
 }
 

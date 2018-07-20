@@ -17,8 +17,15 @@ private:
     Eigen::Matrix<png_byte, Eigen::Dynamic, Eigen::Dynamic> map;
 
 public:
-    // @TODO add png for robot and convolve the map by it rotated in different directions
-    // accounting for error in projection
+    /**
+     * Initialize an occupancy grid with a PNG.
+     *
+     * @param mapPngFile The input map file. The map must be grayscale.
+     *      White pixels are considered free space and black pixels are
+     *      occupied space.
+     * @param resolution The resolution of cells in the map in units/pixel.
+     * @param origin The pose of the top leftmost pixel (0, 0).
+     */
     OccupancyGrid2D(std::string mapPngFile, double resolution, State origin);
 
     double occupancyProbability(const State * state);
