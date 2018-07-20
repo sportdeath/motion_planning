@@ -43,13 +43,18 @@ OccupancyGrid2D<State>::OccupancyGrid2D(std::string mapPngFilename, double resol
     if(bit_depth == 16) png_set_strip_16(png);
     png_read_update_info(png, pngInfo);
 
-    // Initialize an Eigen matrix
-    map = Eigen::Matrix<png_byte, Eigen::Dynamic, Eigen::Dynamic>(height, width);
-    png_bytep mapData = map.data();
+    // Initialize a place to read data to
+    png_bytep mapData = new png_byte[width];
 
-    // Read the occupancy grid into the map
+    map = Eigen::MatrixXd(height, width);
+
     for (int row = 0; row < height; row++) {
-        png_read_row(png, mapData + row * width, NULL);
+        // Read the data
+        png_read_row(png, mapData, NULL);
+        // Fill the map matrix
+        for (int col = 0; col < width; col++) {
+            map(row, col) =  1. - mapData[col]/((double) std::numeric_limits<png_byte>::max());
+        }
     }
 
     // Close the file
@@ -72,17 +77,25 @@ double OccupancyGrid2D<Pose2D>::occupancyProbability(const Pose2D * state) {
 
     if ((0 <= x_cell) and (x_cell < map.cols()) and (0 <= y_cell) and (y_cell < map.rows())) {
         // The cell is in the map, use the value from it
-        return map(x_cell, y_cell)/std::numeric_limits<png_byte>::max();
+        return map(y_cell, x_cell);
     } else {
         // If the cell is outside of the map, assume it is unknown
         return 0.5;
-    }
+   }
 }
 
 template<>
 bool OccupancyGrid2D<Pose2D>::isFree(const Steer<Pose2D> * steer) {
-    // Sample the state
-    return true;
+    // Sample the state at the resolution of the map
+    std::vector<Pose2D> samples = steer.sample(resolution);
+
+    bool isFree = true;
+
+    for (typename std::vector<Pose2D>::iterator sample = samples.begin(); sample < samples.end(); sample++) {
+        isFree &= isFree(sample);
+    }
+
+    return isFree;
 }
 
 template class OccupancyGrid2D<Pose2D>;

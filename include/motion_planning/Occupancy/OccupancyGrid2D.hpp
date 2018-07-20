@@ -14,7 +14,7 @@ class OccupancyGrid2D : public Occupancy<State> {
 private:
     double resolution;
     State origin;
-    Eigen::Matrix<png_byte, Eigen::Dynamic, Eigen::Dynamic> map;
+    Eigen::MatrixXd map;
 
 public:
     /**
