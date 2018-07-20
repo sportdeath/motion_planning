@@ -9,36 +9,34 @@ class OccupancyGrid2DTest : public ::testing::Test {
 };
 
 TEST_F(OccupancyGrid2DTest, CreateMap) {
-    double resolution = 0.1;
-    Pose2D origin = {.x=0, .y=0, .theta=0};
-
-    OccupancyGrid2D<Pose2D> map(classroom_incomplete, resolution, origin);
+    OccupancyGrid2D<Pose2D> occ;
 }
 
 TEST_F(OccupancyGrid2DTest, TestOccupancyProbability) {
+    OccupancyGrid2D<Pose2D> occ;
+
     double resolution = 1.;
     Pose2D origin = {.x=0, .y=0, .theta=0};
-
-    OccupancyGrid2D<Pose2D> map(tiny, resolution, origin);
+    occ.setMap(tiny, resolution, origin);
 
     Pose2D query = {.x=0, .y=0, .theta=0};
-    ASSERT_EQ(0, map.occupancyProbability(&query));
+    ASSERT_EQ(0, occ.occupancyProbability(&query));
     query.x = 1;
-    ASSERT_EQ(1, map.occupancyProbability(&query));
+    ASSERT_EQ(1, occ.occupancyProbability(&query));
     query.x = 2;
-    ASSERT_NEAR(0.5, map.occupancyProbability(&query), 0.01);
+    ASSERT_NEAR(0.5, occ.occupancyProbability(&query), 0.01);
     query.y = 1;
-    ASSERT_EQ(0, map.occupancyProbability(&query));
+    ASSERT_EQ(0, occ.occupancyProbability(&query));
     query.x = 1;
-    ASSERT_NEAR(0.5, map.occupancyProbability(&query), 0.01);
+    ASSERT_NEAR(0.5, occ.occupancyProbability(&query), 0.01);
     query.x = 0;
-    ASSERT_NEAR(0.75, map.occupancyProbability(&query), 0.01);
+    ASSERT_NEAR(0.75, occ.occupancyProbability(&query), 0.01);
     query.y = 2;
-    ASSERT_EQ(1, map.occupancyProbability(&query));
+    ASSERT_EQ(1, occ.occupancyProbability(&query));
     query.x = 1;
-    ASSERT_NEAR(0.25, map.occupancyProbability(&query), 0.01);
+    ASSERT_NEAR(0.25, occ.occupancyProbability(&query), 0.01);
     query.x = 2;
-    ASSERT_EQ(1, map.occupancyProbability(&query));
+    ASSERT_EQ(1, occ.occupancyProbability(&query));
 }
 
 int main(int argc, char **argv) {

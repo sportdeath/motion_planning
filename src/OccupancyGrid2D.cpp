@@ -7,13 +7,14 @@
 
 #include "motion_planning/State/Pose2D.hpp"
 #include "motion_planning/Steer/Steer.hpp"
+#include "motion_planning/Occupancy/Occupancy.hpp"
 #include "motion_planning/Occupancy/OccupancyGrid2D.hpp"
 
 template<class State>
-OccupancyGrid2D<State>::OccupancyGrid2D(std::string mapPngFilename, double resolution_, State origin_) 
-: resolution(resolution_),
-  origin(origin_) {
+OccupancyGrid2D<State>::OccupancyGrid2D() {}
 
+template<class State>
+bool OccupancyGrid2D<State>::setMap(std::string mapPngFilename, double resolution_, State origin_) {
     // Open the file
     std::FILE * mapPngFile = std::fopen(mapPngFilename.c_str(), "rb");
 
@@ -36,7 +37,7 @@ OccupancyGrid2D<State>::OccupancyGrid2D(std::string mapPngFilename, double resol
     // Make sure the image is gray scale
     if(color_type != PNG_COLOR_TYPE_GRAY) {
         std::cerr << mapPngFilename << " is not a grayscale image!" << std::endl;
-        return;
+        return false;
     } 
 
     // Use a bit depth of 8 regardless of the input
@@ -59,6 +60,12 @@ OccupancyGrid2D<State>::OccupancyGrid2D(std::string mapPngFilename, double resol
 
     // Close the file
     fclose(mapPngFile);
+
+    // Initialize the map parameters
+    resolution = resolution_;
+    origin = origin_;
+
+    return true;
 }
 
 template<>
@@ -85,17 +92,17 @@ double OccupancyGrid2D<Pose2D>::occupancyProbability(const Pose2D * state) {
 }
 
 template<>
-bool OccupancyGrid2D<Pose2D>::isFree(const Steer<Pose2D> * steer) {
+bool OccupancyGrid2D<Pose2D>::isFree(Steer<Pose2D> * steer) {
     // Sample the state at the resolution of the map
-    std::vector<Pose2D> samples = steer.sample(resolution);
+    std::vector<Pose2D> samples = steer -> sample(resolution);
 
-    bool isFree = true;
+    bool isFree_ = true;
 
     for (typename std::vector<Pose2D>::iterator sample = samples.begin(); sample < samples.end(); sample++) {
-        isFree &= isFree(sample);
+        isFree_ &= Occupancy::isFree(&*sample);
     }
 
-    return isFree;
+    return isFree_;
 }
 
 template class OccupancyGrid2D<Pose2D>;

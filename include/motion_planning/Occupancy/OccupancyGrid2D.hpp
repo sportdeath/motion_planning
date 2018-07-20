@@ -17,8 +17,10 @@ private:
     Eigen::MatrixXd map;
 
 public:
+    OccupancyGrid2D();
+
     /**
-     * Initialize an occupancy grid with a PNG.
+     * Set the map of the occupancy grid to a png.
      *
      * @param mapPngFile The input map file. The map must be grayscale.
      *      White pixels are considered free space and black pixels are
@@ -26,12 +28,10 @@ public:
      * @param resolution The resolution of cells in the map in units/pixel.
      * @param origin The pose of the top leftmost pixel (0, 0).
      */
-    OccupancyGrid2D(std::string mapPngFile, double resolution, State origin);
+    bool setMap(std::string mapPngFile, double resolution, State origin);
 
     double occupancyProbability(const State * state);
-    bool isFree(const State * state);
-    bool isUnknown(const State * state);
-    bool isFree(const Steer<State> * steer);
+    bool isFree(Steer<State> * steer);
 };
 
 #endif // OCCUPANCY_GRID_2D_HPP

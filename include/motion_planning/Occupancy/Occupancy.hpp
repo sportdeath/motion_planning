@@ -20,7 +20,7 @@ public:
         return occupancyProbability(state) == 0.5;
     }
 
-    virtual bool isFree(const Steer<State> * steer) = 0;
+    virtual bool isFree(Steer<State> * steer) = 0;
 };
 
 #endif // OCCUPANCY_HPP
