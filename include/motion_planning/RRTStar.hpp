@@ -32,8 +32,13 @@ public:
      * @param steer Determines feasible paths between states in free space.
      * @param occupancy Determines whether a state is in free space.
      * @param stateSampler Samples states in free space.
+     * @param goalChecker Checks whether states are in the goal region.
      */
-    RRTStar(Steer<State> &steer_, const Occupancy<State> &occupancy_, const StateSampler<State> &stateSampler_);
+    RRTStar(
+        Steer<State> * steer_, 
+        const Occupancy<State> * occupancy_, 
+        State (*sampleState)(),
+        bool (*isGoal)(const State * state)); // this should just be a function pointer
 
     /**
      * Perform one iteration of the RRTStar algorithm
