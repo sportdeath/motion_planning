@@ -15,6 +15,63 @@
 template<class State>
 OccupancyGrid2D<State>::OccupancyGrid2D() {
     thetaDistribution = std::uniform_real_distribution<double>(-M_PI, M_PI);
+    generator.seed(std::chrono::system_clock::now().time_since_epoch().count());
+}
+
+template<class State>
+double OccupancyGrid2D<State>::intToProbability(uint8_t i) {
+    return 1. - i/((double) std::numeric_limits<uint8_t>::max());
+}
+
+template<class State>
+template<typename T>
+bool OccupancyGrid2D<State>::setMap(const std::vector<T> & dataVec, size_t width, size_t height, double resolution_, State origin_) {
+    const T * data = &dataVec[0];
+    return setMap(data, width, height, resolution_, origin_);
+}
+
+template<class State>
+bool OccupancyGrid2D<State>::setMap(const uint8_t * data, size_t width, size_t height, double resolution_, State origin_) {
+    map = Eigen::MatrixXd(height, width);
+
+    // Fill the map matrix
+    for (size_t row = 0; row < height; row++) {
+        for (size_t col = 0; col < width; col++) {
+            map(row, col) = intToProbability(data[row * width + col]);
+        }
+    }
+
+    return initializeMap(resolution_, origin_);
+}
+
+template<class State>
+bool OccupancyGrid2D<State>::setMap(const int8_t * data, size_t width, size_t height, double resolution_, State origin_) {
+    map = Eigen::MatrixXd(height, width);
+
+    // Fill the map matrix
+    double element;
+    for (size_t row = 0; row < height; row++) {
+        for (size_t col = 0; col < width; col++) {
+            element = data[row * width + col]/100.;
+            if (element < 0) {
+                element = 0.5;
+            }
+            map(row, col) = element;
+        }
+    }
+
+    return initializeMap(resolution_, origin_);
+}
+
+template<class State>
+bool OccupancyGrid2D<State>::initializeMap(double resolution_, State origin_) {
+    // Initialize the map parameters
+    resolution = resolution_;
+    origin = origin_;
+    colDistribution = std::uniform_real_distribution<double>(0, map.cols());
+    rowDistribution = std::uniform_real_distribution<double>(0, map.rows());
+
+    return true;
 }
 
 template<class State>
@@ -58,7 +115,7 @@ bool OccupancyGrid2D<State>::setMap(std::string mapPngFilename, double resolutio
         png_read_row(png, mapData, NULL);
         // Fill the map matrix
         for (int col = 0; col < width; col++) {
-            map(row, col) =  1. - mapData[col]/((double) std::numeric_limits<png_byte>::max());
+            map(row, col) = intToProbability(mapData[col]);
         }
     }
 
@@ -66,11 +123,7 @@ bool OccupancyGrid2D<State>::setMap(std::string mapPngFilename, double resolutio
     fclose(mapPngFile);
 
     // Initialize the map parameters
-    resolution = resolution_;
-    origin = origin_;
-    colDistribution = std::uniform_real_distribution<double>(0, map.cols());
-    rowDistribution = std::uniform_real_distribution<double>(0, map.rows());
-    generator.seed(std::chrono::system_clock::now().time_since_epoch().count());
+    initializeMap(resolution_, origin_);
 
     return true;
 }
@@ -161,3 +214,5 @@ Pose2D OccupancyGrid2D<Pose2D>::samplePerimeter(bool unknown) {
 }
 
 template class OccupancyGrid2D<Pose2D>;
+template bool OccupancyGrid2D<Pose2D>::setMap<uint8_t>(const std::vector<uint8_t> &, size_t, size_t, double, Pose2D);
+template bool OccupancyGrid2D<Pose2D>::setMap<int8_t>(const std::vector<int8_t> &, size_t, size_t, double, Pose2D);

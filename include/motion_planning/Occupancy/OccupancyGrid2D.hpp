@@ -22,6 +22,9 @@ private:
     std::uniform_real_distribution<double> rowDistribution;
     std::uniform_real_distribution<double> thetaDistribution;
 
+    double intToProbability(uint8_t i);
+    bool initializeMap(double resolution_, State origin_);
+
 public:
     OccupancyGrid2D();
 
@@ -43,6 +46,12 @@ public:
     double freeThreshold() const {return 0.4;};
     double occupiedThreshold() const {return 0.6;};
     void randomState(State * state);
+
+    template<typename T>
+    bool setMap(const std::vector<T> & dataVec, size_t width, size_t height, double resolution_, State origin_);
+
+    bool setMap(const int8_t * data, size_t width, size_t height, double resolution_, State origin_);
+    bool setMap(const uint8_t * data, size_t width, size_t height, double resolution_, State origin_);
 };
 
 #endif // OCCUPANCY_GRID_2D_HPP

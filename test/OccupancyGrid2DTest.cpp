@@ -84,6 +84,56 @@ TEST_F(OccupancyGrid2DTest, SampleUnknownPerimeter) {
     }
 }
 
+TEST_F(OccupancyGrid2DTest, InitializeWithBytes) {
+    OccupancyGrid2D<Pose2D> occ;
+    std::vector<uint8_t> data = {0, 255, 0, 127, 63, 191};
+
+    double resolution = 1.;
+    Pose2D origin = {.x=0, .y=0, .theta=0};
+    occ.setMap(data, 3, 2, resolution, origin);
+
+    Pose2D query = {.x=0, .y=0, .theta=0};
+    ASSERT_EQ(1, occ.occupancyProbability(&query)); // 0
+    query.x = 1;
+    ASSERT_EQ(0, occ.occupancyProbability(&query)); // 255
+    query.x = 2;
+    ASSERT_EQ(1, occ.occupancyProbability(&query)); // 0
+
+    query.x = 0;
+    query.y = 1;
+    ASSERT_NEAR(0.5, occ.occupancyProbability(&query), 0.01); // 127
+    query.x = 1;
+    ASSERT_NEAR(0.75, occ.occupancyProbability(&query), 0.01); // 63
+    query.x = 2;
+    ASSERT_NEAR(0.25, occ.occupancyProbability(&query), 0.01); // 191
+}
+
+TEST_F(OccupancyGrid2DTest, InitializeWithInts) {
+    OccupancyGrid2D<Pose2D> occ;
+    std::vector<int8_t> data = {-1, 42, 100, 0, 50, 69};
+
+    double resolution = 1.;
+    Pose2D origin = {.x=0, .y=0, .theta=0};
+    occ.setMap(data, 2, 3, resolution, origin);
+
+    Pose2D query = {.x=0, .y=0, .theta=0};
+    ASSERT_EQ(0.5, occ.occupancyProbability(&query)); // -1
+    query.x = 1;
+    ASSERT_EQ(0.42, occ.occupancyProbability(&query)); // 42
+
+    query.y = 1;
+    query.x = 0;
+    ASSERT_EQ(1, occ.occupancyProbability(&query)); // 100
+    query.x = 1;
+    ASSERT_EQ(0, occ.occupancyProbability(&query)); // 0
+
+    query.y = 2;
+    query.x = 0;
+    ASSERT_EQ(0.5, occ.occupancyProbability(&query)); // 50
+    query.x = 1;
+    ASSERT_EQ(0.69, occ.occupancyProbability(&query)); // 68
+}
+
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
