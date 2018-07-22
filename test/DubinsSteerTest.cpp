@@ -53,7 +53,7 @@ TEST_F(DubinsSteerTest, HalfCircle) {
 
     // Sample the line in intervals of pi/4
     std::vector<Pose2D> samples = steer.sample(steer.cost()/4.);
-    ASSERT_EQ(4, samples.size());
+    ASSERT_EQ(5, samples.size());
 
     // The midpoint should be (x=1, y=0, theta=pi/2)
     ASSERT_NEAR(1, samples[2].x, 0.0001);

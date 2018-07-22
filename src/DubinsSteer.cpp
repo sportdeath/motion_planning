@@ -3,9 +3,7 @@
 extern "C" {
 #include <dubins.h>
 }
-
-#include "motion_planning/Steer/DubinsSteer.hpp"
-
+#include "motion_planning/Steer/DubinsSteer.hpp" 
 bool DubinsSteer::steer(const Pose2D * start, const Pose2D * end) {
     double q0[] = {start -> x, start -> y, start -> theta};
     double q1[] = {end -> x, end -> y, end -> theta};
@@ -32,7 +30,7 @@ int DubinsSteer::dubinsSampleCallback(double q[3], double x, void * user_data) {
 
 std::vector<Pose2D> DubinsSteer::sample(double resolution) {
     // Initialize the output vector
-    int numSamples = cost()/resolution;
+    int numSamples = cost()/resolution + 1;
     std::vector<Pose2D> samples(numSamples);
 
     // Initialize the data passed to the callback function
@@ -40,6 +38,12 @@ std::vector<Pose2D> DubinsSteer::sample(double resolution) {
 
     // Sample the vector
     dubins_path_sample_many(&path, resolution, dubinsSampleCallback, (void *) &data);
+
+    // Add the end point
+    double endPoint[3];
+    dubins_path_endpoint(&path, endPoint);
+    Pose2D end = {.x=endPoint[0], .y=endPoint[1], .theta=endPoint[2]};
+    samples[numSamples-1] = end;
 
     return samples;
 }
