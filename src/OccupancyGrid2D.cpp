@@ -139,8 +139,8 @@ double OccupancyGrid2D<Pose2D>::occupancyProbability(const Pose2D * state) const
     double y_rot = x_trans * sin(origin.theta) + y_trans * cos(origin.theta);
 
     // Discretize the state into a cell
-    int x_cell = std::round(x_rot/resolution);
-    int y_cell = std::round(y_rot/resolution);
+    int x_cell = std::floor(x_rot/resolution);
+    int y_cell = std::floor(y_rot/resolution);
 
     if ((0 <= x_cell) and (x_cell < map.cols()) and (0 <= y_cell) and (y_cell < map.rows())) {
         // The cell is in the map, use the value from it
@@ -167,8 +167,10 @@ bool OccupancyGrid2D<Pose2D>::isSteerFree(Steer<Pose2D> * steer) const {
 
 template<>
 void OccupancyGrid2D<Pose2D>::randomState(Pose2D * state) {
-    state -> x = colDistribution(generator) * resolution;
-    state -> y = rowDistribution(generator) * resolution;
+    double x = colDistribution(generator) * resolution;
+    double y = rowDistribution(generator) * resolution;
+    state -> x = x * cos(-origin.theta) - y * sin(-origin.theta) + origin.x;
+    state -> y = x * sin(-origin.theta) + y * cos(-origin.theta) + origin.y;
     state -> theta = thetaDistribution(generator);
 }
 

@@ -54,6 +54,25 @@ TEST_F(OccupancyGrid2DTest, SampleFree) {
     }
 }
 
+TEST_F(OccupancyGrid2DTest, SampleFreeRotated) {
+    OccupancyGrid2D<Pose2D> occ;
+
+    double resolution = 0.05;
+    int width = 2./resolution;
+    int height = 2./resolution;
+    std::vector<int8_t> data(width*height, 0);
+    Pose2D origin = {.x=-20, .y=4, .theta=-1.1};
+    occ.setMap(data, width, height, resolution, origin);
+
+    Pose2D state;
+    for (int i = 0; i < 100; i++) {
+        occ.randomState(&state);
+        ASSERT_TRUE(occ.isFree(&state));
+        ASSERT_FALSE(occ.isUnknown(&state));
+        ASSERT_FALSE(occ.isOccupied(&state));
+    }
+}
+
 TEST_F(OccupancyGrid2DTest, SampleOccupiedPerimeter) {
     OccupancyGrid2D<Pose2D> occ;
 

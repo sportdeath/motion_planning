@@ -59,6 +59,10 @@ TEST_F(DubinsSteerTest, HalfCircle) {
     ASSERT_NEAR(1, samples[2].x, 0.0001);
     ASSERT_NEAR(0, samples[2].y, 0.0001);
     ASSERT_NEAR(M_PI/2., samples[2].theta, 0.0001);
+
+    ASSERT_NEAR(end.x, samples[4].x, 0.0001);
+    ASSERT_NEAR(end.y, samples[4].y, 0.0001);
+    ASSERT_NEAR(end.theta, samples[4].theta, 0.0001);
 }
 
 int main(int argc, char **argv) {
