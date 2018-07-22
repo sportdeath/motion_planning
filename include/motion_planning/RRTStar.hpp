@@ -60,9 +60,14 @@ public:
      *
      * @returns True iff the random sample is added to the tree
      */
-    bool iterate();
+    Node * iterate();
 
-    std::vector<Node *> goals() {return goalNodes;};
+    std::vector<Node *> goals() const {return goalNodes;};
+
+    /**
+     * Sample the path at approximately the given resolution.
+     */
+    std::vector<State> samplePath(const Node * end, double resolution) const;
 };
 
 #endif // RRT_STAR_HPP

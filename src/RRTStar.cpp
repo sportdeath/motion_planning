@@ -47,6 +47,7 @@ typename RRTStar<State>::Node * RRTStar<State>::growTree(const State & rand) {
             // Compute the total cost from the root to the random node
             double cost = (*node).cost + steer -> cost();
 
+            // If the cost is better, update the parent
             if (cost < costMin) {
                 costMin = cost;
                 parentMin = &*node;
@@ -90,7 +91,7 @@ void RRTStar<State>::rewire(Node * randNode) {
                 // Set nearNode's parent to randNode
                 (*node).parent = randNode; 
 
-                // Add randNode's child to nearNode
+                // Add nearNode to randNodes children
                 randNode -> children.push_back(&*node);
             }
         }
@@ -117,7 +118,7 @@ typename RRTStar<State>::Node * RRTStar<State>::initNode(const State & state, No
 }
 
 template <class State>
-bool RRTStar<State>::iterate() {
+typename RRTStar<State>::Node * RRTStar<State>::iterate() {
     // Generate a random state
     State rand = sampleState();    
 
@@ -131,11 +132,40 @@ bool RRTStar<State>::iterate() {
         if (isGoal(&randNode -> state)) {
             goalNodes.push_back(randNode);
         }
-
-        return true;
-    } else {
-        return false;
     }
+
+    return randNode;
+}
+
+template <class State>
+std::vector<State> RRTStar<State>::samplePath(const Node * end, double resolution) const {
+
+    // Sample paths between every node
+    std::vector<std::vector<State>> pathSegments;
+    while (end -> parent != NULL) {
+        bool validSteer = steer -> steer(&end -> parent -> state, &end -> state);
+
+        if (validSteer) {
+            pathSegments.push_back(steer -> sample(resolution));
+        }
+
+        end = end -> parent;
+    }
+
+    // Determine the total path size
+    size_t total_length = 0;
+    for (auto vec = pathSegments.begin(); vec < pathSegments.end(); vec++) { 
+        total_length += (*vec).size();
+    }
+
+    // Allocate the total path and merge
+    std::vector<State> path;
+    path.reserve(total_length);
+    for (auto vec = pathSegments.begin(); vec < pathSegments.end(); vec++) { 
+        path.insert(path.end(), (*vec).begin(), (*vec).end());
+    }
+
+    return path;
 }
 
 template class RRTStar<Pose2D>;

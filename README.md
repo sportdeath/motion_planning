@@ -7,7 +7,7 @@ To build the library independently do:
     cmake ..
     make
 
-To integrate this project into another CMake project add the following to ```CMakeLists.txt```:
+To integrate this project into another CMake project add the following to your ```CMakeLists.txt```:
 
     ExternalProject_Add(motion_planning_proj
         GIT_REPOSITORY https://github.com/sportdeath/motion_planning
@@ -17,5 +17,5 @@ To integrate this project into another CMake project add the following to ```CMa
     ExternalProject_Get_Property(motion_planning_proj SOURCE_DIR BINARY_DIR)
     include_directories(${SOURCE_DIR}/include)
     link_directories(${BINARY_DIR})
-    set(LIBS ${LIBS} dubins)
-    set(DEPS ${DEPS} dubins_proj)
+    set(LIBS ${LIBS} motion_planning)
+    set(DEPS ${DEPS} motion_planning_proj)

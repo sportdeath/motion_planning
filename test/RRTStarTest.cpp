@@ -56,6 +56,35 @@ TEST_F(RRTStarTest, RRTStarIterate) {
     EXPECT_GT(count, 0);
 }
 
+TEST_F(RRTStarTest, RRTStarSamplePath) {
+    Pose2D start = {.x=5, .y=4, .theta=-0.5};
+    RRTStar<Pose2D> rrt(
+        &dubinsSteer, 
+        &classroom, 
+        sampleClassroom,
+        goalClassroom,
+        start,
+        searchRadius);
+
+
+    RRTStar<Pose2D>::Node * lastNode;
+    int count = 0;
+    for (int i = 0; i < 1000; i++) {
+        RRTStar<Pose2D>::Node * node = rrt.iterate();
+        if (node == NULL) {
+            count++;
+        } else {
+            lastNode = node;
+        }
+    }
+
+    ASSERT_GT(count, 0);
+
+    std::vector<Pose2D> path = rrt.samplePath(lastNode, 0.1);
+
+    EXPECT_GT(path.size(), 0);
+}
+
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
