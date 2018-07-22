@@ -80,9 +80,19 @@ TEST_F(RRTStarTest, RRTStarSamplePath) {
 
     ASSERT_GT(count, 0);
 
-    std::vector<Pose2D> path = rrt.samplePath(lastNode, 0.1);
+    double sampleResolution = 0.1;
+
+    std::vector<Pose2D> path = rrt.samplePath(lastNode, sampleResolution);
 
     EXPECT_GT(path.size(), 0);
+
+    std::vector<std::vector<Pose2D>> tree = rrt.sampleTree(sampleResolution);
+    size_t treeSize = 0;
+    for (auto vec = tree.begin(); vec < tree.end(); vec++) { 
+        treeSize += (*vec).size();
+    }
+
+    EXPECT_GT(treeSize, path.size());
 }
 
 int main(int argc, char **argv) {

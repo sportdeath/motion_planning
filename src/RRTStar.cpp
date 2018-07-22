@@ -152,6 +152,9 @@ std::vector<State> RRTStar<State>::samplePath(const Node * end, double resolutio
         end = end -> parent;
     }
 
+    // Reverse the nodes
+    std::reverse(pathSegments.begin(), pathSegments.end());
+
     // Determine the total path size
     size_t total_length = 0;
     for (auto vec = pathSegments.begin(); vec < pathSegments.end(); vec++) { 
@@ -166,6 +169,24 @@ std::vector<State> RRTStar<State>::samplePath(const Node * end, double resolutio
     }
 
     return path;
+}
+
+template <class State>
+std::vector<std::vector<State> > RRTStar<State>::sampleTree(double resolution) const {
+
+    // Sample paths between every node
+    std::vector<std::vector<State>> pathSegments;
+    for (auto node = nodes.begin(); node != nodes.end(); node++) { 
+        if ((*node).parent != NULL)  {
+            bool validSteer = steer -> steer(&(*node).parent -> state, &(*node).state);
+
+            if (validSteer) {
+                pathSegments.push_back(steer -> sample(resolution));
+            }
+        }
+    }
+
+    return pathSegments;
 }
 
 template class RRTStar<Pose2D>;

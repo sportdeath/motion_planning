@@ -68,6 +68,8 @@ public:
      * Sample the path at approximately the given resolution.
      */
     std::vector<State> samplePath(const Node * end, double resolution) const;
+
+    std::vector<std::vector<State> > sampleTree(double resolution) const;
 };
 
 #endif // RRT_STAR_HPP
