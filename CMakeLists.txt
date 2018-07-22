@@ -22,18 +22,6 @@ link_directories(${BINARY_DIR})
 set(LIBS ${LIBS} dubins)
 set(DEPS ${DEPS} dubins_proj)
 
-# Add Eigen
-ExternalProject_Add(eigen_proj
-    GIT_REPOSITORY https://github.com/eigenteam/eigen-git-mirror.git
-    CONFIGURE_COMMAND ""
-    BUILD_COMMAND ""
-    UPDATE_COMMAND ""
-    INSTALL_COMMAND ""
-    )
-ExternalProject_Get_Property(eigen_proj SOURCE_DIR)
-include_directories(${SOURCE_DIR})
-set(DEPS ${DEPS} eigen_proj)
-
 # Add PNG
 ExternalProject_Add(png_proj
     GIT_REPOSITORY git://git.code.sf.net/p/libpng/code

@@ -5,7 +5,6 @@
 #include <chrono>
 
 #include <png.h>
-#include <Eigen/Dense>
 
 #include "motion_planning/State/Pose2D.hpp"
 #include "motion_planning/Steer/Steer.hpp"
@@ -32,44 +31,45 @@ bool OccupancyGrid2D<State>::setMap(const std::vector<T> & dataVec, size_t width
 
 template<class State>
 bool OccupancyGrid2D<State>::setMap(const uint8_t * data, size_t width, size_t height, double resolution_, State origin_) {
-    map = Eigen::MatrixXd(height, width);
+    initializeMap(width, height, resolution_, origin_);
 
     // Fill the map matrix
-    for (size_t row = 0; row < height; row++) {
-        for (size_t col = 0; col < width; col++) {
-            map(row, col) = intToProbability(data[row * width + col]);
-        }
+    for (size_t i = 0; i < width * height; i++) {
+        map[i] = intToProbability(data[i]);
     }
 
-    return initializeMap(resolution_, origin_);
+    return true;
 }
 
 template<class State>
 bool OccupancyGrid2D<State>::setMap(const int8_t * data, size_t width, size_t height, double resolution_, State origin_) {
-    map = Eigen::MatrixXd(height, width);
+    initializeMap(width, height, resolution_, origin_);
 
     // Fill the map matrix
     double element;
-    for (size_t row = 0; row < height; row++) {
-        for (size_t col = 0; col < width; col++) {
-            element = data[row * width + col]/100.;
-            if (element < 0) {
-                element = 0.5;
-            }
-            map(row, col) = element;
+    for (size_t i = 0; i < width * height; i++) {
+        element = data[i]/100.;
+        if (element < 0) {
+            element = 0.5;
         }
+        map[i] = element;
     }
 
-    return initializeMap(resolution_, origin_);
+    return true;
 }
 
 template<class State>
-bool OccupancyGrid2D<State>::initializeMap(double resolution_, State origin_) {
+bool OccupancyGrid2D<State>::initializeMap(size_t width_, size_t height_, double resolution_, State origin_) {
+    // Initialize the map
+    width = width_;
+    height = height_;
+    map = std::vector<double>(width * height, 0);
+
     // Initialize the map parameters
     resolution = resolution_;
     origin = origin_;
-    colDistribution = std::uniform_real_distribution<double>(0, map.cols());
-    rowDistribution = std::uniform_real_distribution<double>(0, map.rows());
+    colDistribution = std::uniform_real_distribution<double>(0, width);
+    rowDistribution = std::uniform_real_distribution<double>(0, height);
 
     return true;
 }
@@ -108,22 +108,20 @@ bool OccupancyGrid2D<State>::setMap(std::string mapPngFilename, double resolutio
     // Initialize a place to read data to
     png_bytep mapData = new png_byte[width];
 
-    map = Eigen::MatrixXd(height, width);
+    // Initialize the map
+    initializeMap(width, height, resolution_, origin_);
 
     for (int row = 0; row < height; row++) {
         // Read the data
         png_read_row(png, mapData, NULL);
         // Fill the map matrix
         for (int col = 0; col < width; col++) {
-            map(row, col) = intToProbability(mapData[col]);
+            map[row * width + col] = intToProbability(mapData[col]);
         }
     }
 
     // Close the file
     fclose(mapPngFile);
-
-    // Initialize the map parameters
-    initializeMap(resolution_, origin_);
 
     return true;
 }
@@ -142,9 +140,9 @@ double OccupancyGrid2D<Pose2D>::occupancyProbability(const Pose2D * state) const
     int x_cell = std::floor(x_rot/resolution);
     int y_cell = std::floor(y_rot/resolution);
 
-    if ((0 <= x_cell) and (x_cell < map.cols()) and (0 <= y_cell) and (y_cell < map.rows())) {
+    if ((0 <= x_cell) and (x_cell < width) and (0 <= y_cell) and (y_cell < height)) {
         // The cell is in the map, use the value from it
-        return map(y_cell, x_cell);
+        return map[y_cell * width + x_cell];
     } else {
         // If the cell is outside of the map, assume it is unknown
         return 0.5;

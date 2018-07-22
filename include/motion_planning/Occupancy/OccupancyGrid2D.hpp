@@ -5,7 +5,6 @@
 #include <random>
 
 #include <png.h>
-#include <Eigen/Dense>
 
 #include "motion_planning/Occupancy/Occupancy.hpp"
 #include "motion_planning/Steer/Steer.hpp"
@@ -15,7 +14,10 @@ class OccupancyGrid2D : public Occupancy<State> {
 private:
     double resolution;
     State origin;
-    Eigen::MatrixXd map;
+
+    std::vector<double> map;
+    size_t width;
+    size_t height;
 
     std::default_random_engine generator;
     std::uniform_real_distribution<double> colDistribution;
@@ -23,7 +25,7 @@ private:
     std::uniform_real_distribution<double> thetaDistribution;
 
     double intToProbability(uint8_t i);
-    bool initializeMap(double resolution_, State origin_);
+    bool initializeMap(size_t width, size_t height, double resolution_, State origin_);
 
 public:
     OccupancyGrid2D();
