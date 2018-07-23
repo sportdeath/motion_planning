@@ -12,6 +12,7 @@ class RRTStarTest : public ::testing::Test {
         OccupancyGrid2D<Pose2D> classroom;
         std::function<Pose2D(void)> sampleClassroom;
         std::function<bool(const Pose2D *)> goalClassroom;
+        static constexpr double searchRadius = 3.;
 
         RRTStarTest() 
             : dubinsSteer(1.)
@@ -27,11 +28,29 @@ class RRTStarTest : public ::testing::Test {
 };
 
 TEST_F(RRTStarTest, InitializeRRTStar) {
+    Pose2D start = {.x=0, .y=0, .theta=0};
     RRTStar<Pose2D> rrt(
         &dubinsSteer, 
         &classroom, 
         sampleClassroom,
-        goalClassroom);
+        goalClassroom,
+        start,
+        searchRadius);
+}
+
+TEST_F(RRTStarTest, RRTStarIterate) {
+    Pose2D start = {.x=1, .y=1, .theta=0.5};
+    RRTStar<Pose2D> rrt(
+        &dubinsSteer, 
+        &classroom, 
+        sampleClassroom,
+        goalClassroom,
+        start,
+        searchRadius);
+
+    for (int i = 0; i < 1000; i++) {
+        rrt.iterate();
+    }
 }
 
 int main(int argc, char **argv) {

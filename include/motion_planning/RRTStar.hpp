@@ -1,6 +1,7 @@
 #ifndef RRT_STAR_HPP
 #define RRT_STAR_HPP
 
+#include <list>
 #include <functional>
 
 #include "motion_planning/Steer/Steer.hpp"
@@ -22,17 +23,24 @@ private:
     const std::function<State(void)> sampleState;
     const std::function<bool(const State *)> isGoal;
 
-    std::vector<Node> nodes;
+    double searchRadius;
+
+    /**
+     * Nodes is a list so pointers don't get invalidated
+     * as it changes size.
+     */
+    std::list<Node> nodes;
     std::vector<Node *> goalNodes;
 
     //void insert(const Node &node);
     Node * initNode(const State & state, Node * parent, double cost);
 
-    std::vector<Node *> nearestNodes(const State * state);
+    //std::vector<Node *> nearestNodes(const State * state);
 
-    Node * growTree(const State & rand, const std::vector<Node*> & nearNodes);
-
-    void rewire(Node * rand, const std::vector<Node*> & nearNodes);
+    //Node * growTree(const State & rand, const std::vector<Node*> & nearNodes);
+    //void rewire(Node * rand, const std::vector<Node*> & nearNodes);
+    Node * growTree(const State & rand);
+    void rewire(Node * rand);
 
 public:
     /** 
@@ -47,7 +55,9 @@ public:
         Steer<State> * steer_, 
         const Occupancy<State> * occupancy_, 
         std::function<State(void)> sampleState_,
-        std::function<bool(const State *)> isGoal_);
+        std::function<bool(const State *)> isGoal_,
+        const State & start,
+        double searchRadius_);
 
     /**
      * Perform one iteration of the RRTStar algorithm

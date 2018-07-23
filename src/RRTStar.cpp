@@ -1,6 +1,7 @@
 #include <cmath>
 #include <vector>
 #include <limits>
+#include <iostream>
 
 #include "motion_planning/RRTStar.hpp"
 #include "motion_planning/Steer/Steer.hpp"
@@ -11,35 +12,43 @@ RRTStar<State>::RRTStar(
         Steer<State> * steer_, 
         const Occupancy<State> * occupancy_, 
         const std::function<State(void)> sampleState_,
-        const std::function<bool(const State *)> isGoal_) :
+        const std::function<bool(const State *)> isGoal_,
+        const State & start,
+        double searchRadius_) :
     steer(steer_),
     occupancy(occupancy_),
     sampleState(sampleState_),
-    isGoal(isGoal_)
-{}
+    isGoal(isGoal_),
+    searchRadius(searchRadius_)
+{
+    // Add the root node
+    initNode(start, NULL, 0.);
+}
 
 template <class State>
-typename RRTStar<State>::Node * RRTStar<State>::growTree(const State & rand, const std::vector<Node *> &nearNodes) {
+typename RRTStar<State>::Node * RRTStar<State>::growTree(const State & rand) {
 
     // Initialize the cost
     double costMin = std::numeric_limits<double>::infinity();
     Node * parentMin = NULL;
 
-    // Iterate over nearby nodes
-    for (auto nearNode = nearNodes.begin(); nearNode < nearNodes.end(); nearNode++) {
+    for (auto node = nodes.begin(); node != nodes.end(); node++) { 
 
         // Compute the steer from the nearest node to the random node
-        bool validSteer = steer -> steer(&((*nearNode) -> state), &rand);
+        bool validSteer = steer -> steer(&((*node).state), &rand);
+
+        // Filter out nodes based on the length of the steer
+        if (steer -> cost() > searchRadius) continue;
 
         // If the steer is valid and the path is free
         if (validSteer && occupancy -> isSteerFree(steer)) {
 
             // Compute the total cost from the root to the random node
-            double cost = (*nearNode) -> cost + steer -> cost();
+            double cost = (*node).cost + steer -> cost();
 
             if (cost < costMin) {
                 costMin = cost;
-                parentMin = *nearNode;
+                parentMin = &*node;
             }
         }
     }
@@ -48,22 +57,23 @@ typename RRTStar<State>::Node * RRTStar<State>::growTree(const State & rand, con
         // Create a new node
         Node * randNode = initNode(rand, parentMin, costMin);
 
-        // Insert it into the tree for nearest neighbors
-        //insert(randNode);
-
         return randNode;
     } else {
         return NULL;
     }
 }
 
-template <>
-void RRTStar<Pose2D>::rewire(Node * randNode, const std::vector<Node *> & nearNodes) {
-    // Iterate over nearby nodes
-    for (auto nearNode = nearNodes.begin(); nearNode < nearNodes.end(); nearNode++) {
+template <class State>
+void RRTStar<State>::rewire(Node * randNode) {
+
+    // Iterate over all nodes
+    for (auto node = nodes.begin(); node != nodes.end(); node++) { 
 
         // Compute the steer from the random node to the nearest node
-        bool validSteer = steer -> steer(&(randNode -> state), &((*nearNode) -> state));
+        bool validSteer = steer -> steer(&(randNode -> state), &((*node).state));
+
+        // Filter out nodes based on the length of the steer
+        if (steer -> cost() > searchRadius) continue;
 
         // If the steer is valid and the path is free
         if (validSteer && occupancy -> isSteerFree(steer)) {
@@ -71,28 +81,26 @@ void RRTStar<Pose2D>::rewire(Node * randNode, const std::vector<Node *> & nearNo
             // Compute the total cost from the root to the random node
             double cost = randNode -> cost + steer -> cost();
 
-            if (cost < (*nearNode) -> cost) {
-                // Remove nearNode from parent's children
-                std::vector<Node *> & children = (*nearNode) -> parent -> children;
-                children.erase(std::remove(children.begin(), children.end(), *nearNode), children.end());
+            if (cost < (*node).cost) {
+                // Remove nearNode from its parent's children
+                std::vector<Node *> & children = (*node).parent -> children;
+                children.erase(std::remove(children.begin(), children.end(), &*node), children.end());
 
                 // Set nearNode's parent to randNode
-                (*nearNode) -> parent = randNode; 
+                (*node).parent = randNode; 
 
                 // Add randNode's child to nearNode
-                randNode -> children.push_back(*nearNode);
+                randNode -> children.push_back(&*node);
             }
         }
     }
 }
 
-// Init node
 template <class State>
 typename RRTStar<State>::Node * RRTStar<State>::initNode(const State & state, Node * parent, double cost) {
     // Add a new node to the list of nodes
-    std::size_t old_size = nodes.size();
-    nodes.resize(old_size + 1);
-    Node * newNode = &nodes[old_size];
+    nodes.emplace_back();
+    Node * newNode = &nodes.back();
 
     // Initialize state
     newNode -> state = state;
@@ -100,7 +108,9 @@ typename RRTStar<State>::Node * RRTStar<State>::initNode(const State & state, No
     newNode -> cost = cost;
 
     // Add child to the parent
-    parent -> children.push_back(newNode);
+    if (parent != NULL) {
+        parent -> children.push_back(newNode);
+    }
 
     return newNode;
 }
@@ -110,15 +120,12 @@ bool RRTStar<State>::iterate() {
     // Generate a random state
     State rand = sampleState();    
 
-    // Determine the nearest nodes to the state
-    std::vector<Node*> nearNodes = nearestNodes(&rand);
-
     // Attempt to grow the tree to the random state
-    Node * randNode = growTree(rand, nearNodes);
+    Node * randNode = growTree(rand);
 
     if (randNode != NULL) {
         // If the node has been added, perform rewire
-        rewire(randNode, nearNodes);
+        rewire(randNode);
         // Check if the added node is in the goal set
         if (isGoal(&randNode -> state)) {
             goalNodes.push_back(randNode);
@@ -128,21 +135,6 @@ bool RRTStar<State>::iterate() {
     } else {
         return false;
     }
-}
-
-template <>
-std::vector<typename RRTStar<Pose2D>::Node *> RRTStar<Pose2D>::nearestNodes(const Pose2D * state) {
-    std::vector<Node *> nearNodes;
-
-    for (auto node = nodes.begin(); node < nodes.end(); node++) {
-        double dist = sqrt(pow(state -> x - ((*node).state.x), 2.) + pow(state -> y - ((*node).state.y), 2.));
-        
-        if (dist < 3.) {
-            nearNodes.push_back(&*node);
-        }
-    }
-
-    return nearNodes;
 }
 
 template class RRTStar<Pose2D>;

@@ -103,7 +103,7 @@ bool OccupancyGrid2D<Pose2D>::isSteerFree(Steer<Pose2D> * steer) const {
 
     bool isFree_ = true;
 
-    for (typename std::vector<Pose2D>::iterator sample = samples.begin(); sample < samples.end(); sample++) {
+    for (auto sample = samples.begin(); sample < samples.end(); sample++) {
         isFree_ &= Occupancy::isFree(&*sample);
     }
 

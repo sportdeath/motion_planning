@@ -1,3 +1,5 @@
+#include <iostream> 
+
 extern "C" {
 #include <dubins.h>
 }
@@ -18,7 +20,9 @@ int DubinsSteer::dubinsSampleCallback(double q[3], double x, void * user_data) {
     
     // Add it to the vector
     DubinsSampleData * data = (DubinsSampleData *) user_data;
-    (*data -> samples)[data -> sampleIndex] = pose;
+    if (data -> sampleIndex < data -> samples -> size()) {
+        (*data -> samples)[data -> sampleIndex] = pose;
+    }
 
     // Increase the index
     data -> sampleIndex ++;
