@@ -2,6 +2,7 @@
 #include <vector>
 #include <limits>
 #include <iostream>
+#include <algorithm>
 
 #include "motion_planning/RRTStar.hpp"
 #include "motion_planning/Steer/Steer.hpp"
