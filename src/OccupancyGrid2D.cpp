@@ -12,7 +12,9 @@
 #include "motion_planning/Occupancy/OccupancyGrid2D.hpp"
 
 template<class State>
-OccupancyGrid2D<State>::OccupancyGrid2D() {}
+OccupancyGrid2D<State>::OccupancyGrid2D() {
+    thetaDistribution = std::uniform_real_distribution<double>(-M_PI, M_PI);
+}
 
 template<class State>
 bool OccupancyGrid2D<State>::setMap(std::string mapPngFilename, double resolution_, State origin_) {
@@ -65,12 +67,14 @@ bool OccupancyGrid2D<State>::setMap(std::string mapPngFilename, double resolutio
     // Initialize the map parameters
     resolution = resolution_;
     origin = origin_;
+    colDistribution = std::uniform_real_distribution<double>(0, map.cols());
+    rowDistribution = std::uniform_real_distribution<double>(0, map.rows());
 
     return true;
 }
 
 template<>
-double OccupancyGrid2D<Pose2D>::occupancyProbability(const Pose2D * state) {
+double OccupancyGrid2D<Pose2D>::occupancyProbability(const Pose2D * state) const {
     // Translate the state by the origin
     double x_trans = state -> x - origin.x;
     double y_trans = state -> y - origin.y;
@@ -93,7 +97,7 @@ double OccupancyGrid2D<Pose2D>::occupancyProbability(const Pose2D * state) {
 }
 
 template<>
-bool OccupancyGrid2D<Pose2D>::isFree(Steer<Pose2D> * steer) {
+bool OccupancyGrid2D<Pose2D>::isSteerFree(Steer<Pose2D> * steer) const {
     // Sample the state at the resolution of the map
     std::vector<Pose2D> samples = steer -> sample(resolution);
 
@@ -104,6 +108,54 @@ bool OccupancyGrid2D<Pose2D>::isFree(Steer<Pose2D> * steer) {
     }
 
     return isFree_;
+}
+
+template<>
+void OccupancyGrid2D<Pose2D>::randomState(Pose2D * state) {
+    state -> x = colDistribution(generator) * resolution;
+    state -> y = rowDistribution(generator) * resolution;
+    state -> theta = thetaDistribution(generator);
+}
+
+template<>
+Pose2D OccupancyGrid2D<Pose2D>::sampleFree() {
+    Pose2D state;
+
+    while (true) {
+        // Choose a random state in the map
+        randomState(&state);
+
+        if (Occupancy::isFree(&state)) {
+            return state;
+        }
+    }
+}
+
+template<>
+Pose2D OccupancyGrid2D<Pose2D>::samplePerimeter(bool unknown) {
+    Pose2D state;
+    Pose2D stateNear;
+    
+    while (true) {
+        // Choose a random state in the map
+        randomState(&state);
+
+        if ((unknown and isUnknown(&state)) or ((not unknown) and isOccupied(&state))) {
+            // Find an adjacent state that is free
+            stateNear.theta = state.theta;
+
+            for (int i = -1; i <= 1; i+=2) {
+                stateNear.x = state.x + i * resolution;
+                stateNear.y = state.y;
+                if (Occupancy::isFree(&stateNear)) return state;
+
+                stateNear.x = state.x;
+                stateNear.y = state.y + i * resolution;
+                if (Occupancy::isFree(&stateNear)) return state;
+            }
+
+        }
+    }
 }
 
 template class OccupancyGrid2D<Pose2D>;

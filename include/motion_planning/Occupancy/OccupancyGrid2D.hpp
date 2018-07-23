@@ -2,6 +2,7 @@
 #define OCCUPANCY_GRID_2D_HPP
 
 #include <string>
+#include <random>
 
 #include <png.h>
 #include <Eigen/Dense>
@@ -15,6 +16,11 @@ private:
     double resolution;
     State origin;
     Eigen::MatrixXd map;
+
+    std::default_random_engine generator;
+    std::uniform_real_distribution<double> colDistribution;
+    std::uniform_real_distribution<double> rowDistribution;
+    std::uniform_real_distribution<double> thetaDistribution;
 
 public:
     OccupancyGrid2D();
@@ -30,8 +36,13 @@ public:
      */
     bool setMap(std::string mapPngFile, double resolution, State origin);
 
-    double occupancyProbability(const State * state);
-    bool isFree(Steer<State> * steer);
+    double occupancyProbability(const State * state) const;
+    bool isSteerFree(Steer<State> * steer) const;
+    State sampleFree();
+    State samplePerimeter(bool unknown=false);
+    double freeThreshold() const {return 0.4;};
+    double occupiedThreshold() const {return 0.6;};
+    void randomState(State * state);
 };
 
 #endif // OCCUPANCY_GRID_2D_HPP

@@ -10,46 +10,46 @@ public:
      * Return the probability that the given
      * state is occupied.
      */
-    virtual double occupancyProbability(const State * state) = 0;
+    virtual double occupancyProbability(const State * state) const = 0;
 
     /**
      * The upper-threshold occupancy probability for which
      * states are considered free.
      */
-    virtual double freeThreshold() = 0;
+    virtual double freeThreshold() const = 0;
 
     /**
      * The lower-threshold occupancy probability for which
      * states are considered occupied.
      */
-    virtual double occupiedThreshold() = 0;
+    virtual double occupiedThreshold() const = 0;
 
-    inline bool isFree(const State * state) {
+    inline bool isFree(const State * state) const {
         return occupancyProbability(state) < freeThreshold();
     }
 
-    inline bool isOccupied(const State * state) {
+    inline bool isOccupied(const State * state) const {
         return occupancyProbability(state) > occupiedThreshold();
     }
 
-    inline bool isUnknown(const State * state) {
+    inline bool isUnknown(const State * state) const {
         return (not isFree(state)) and (not isOccupied(state));
     }
 
     /**
      * Takes a steering function and 
      */
-    virtual bool isFree(Steer<State> * steer) = 0;
+    virtual bool isSteerFree(Steer<State> * steer) const = 0;
 
     /**
      * Sample a free state uniformly at random.
      */
-    virtual State state sampleFree() = 0;
+    virtual State sampleFree() = 0;
 
     /**
      * Sample occupied or unknown states that border free states.
      */
-    virtual State state samplePerimeter(bool unknown=false) = 0;
+    virtual State samplePerimeter(bool unknown=false) = 0;
 };
 
 #endif // OCCUPANCY_HPP

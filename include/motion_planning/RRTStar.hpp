@@ -1,29 +1,38 @@
 #ifndef RRT_STAR_HPP
 #define RRT_STAR_HPP
 
+#include <functional>
+
 #include "motion_planning/Steer/Steer.hpp"
 #include "motion_planning/Occupancy/Occupancy.hpp"
-#include "motion_planning/StateSampler/StateSampler.hpp"
 
 template <class State>
 class RRTStar {
-
-private:
-    Steer<State> steer;
-    Occupancy<State> occupancy;
-    StateSampler<State> stateSampler;
-
+public:
     struct Node {
         State state;
         Node * parent;
         std::vector<Node *> children;
+        double cost;
     };
 
-    void insert(const Node &node);
+private:
+    Steer<State> * steer;
+    const Occupancy<State> * occupancy;
+    const std::function<State(void)> sampleState;
+    const std::function<bool(const State *)> isGoal;
 
-    Node * growTree(const State &rand, std::vector<Node> const &nearNodes);
+    std::vector<Node> nodes;
+    std::vector<Node *> goalNodes;
 
-    void rewire(const Node &rand, std::vector<Node> const &nearNodes);
+    //void insert(const Node &node);
+    Node * initNode(const State & state, Node * parent, double cost);
+
+    std::vector<Node *> nearestNodes(const State * state);
+
+    Node * growTree(const State & rand, const std::vector<Node*> & nearNodes);
+
+    void rewire(Node * rand, const std::vector<Node*> & nearNodes);
 
 public:
     /** 
@@ -37,8 +46,8 @@ public:
     RRTStar(
         Steer<State> * steer_, 
         const Occupancy<State> * occupancy_, 
-        State (*sampleState)(),
-        bool (*isGoal)(const State * state)); // this should just be a function pointer
+        std::function<State(void)> sampleState_,
+        std::function<bool(const State *)> isGoal_);
 
     /**
      * Perform one iteration of the RRTStar algorithm
@@ -50,9 +59,7 @@ public:
      */
     bool iterate();
 
-    /**
-     */
-    std::vector<State> getBestPaths(int N);
+    std::vector<Node *> goals() {return goalNodes;};
 };
 
 #endif // RRT_STAR_HPP
