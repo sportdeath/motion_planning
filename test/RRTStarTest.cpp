@@ -48,9 +48,12 @@ TEST_F(RRTStarTest, RRTStarIterate) {
         start,
         searchRadius);
 
+    int count = 0;
     for (int i = 0; i < 1000; i++) {
-        rrt.iterate();
+        if (rrt.iterate()) count++;
     }
+
+    EXPECT_GT(count, 0);
 }
 
 int main(int argc, char **argv) {

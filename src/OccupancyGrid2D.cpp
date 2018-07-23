@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cmath>
 #include <limits>
+#include <chrono>
 
 #include <png.h>
 #include <Eigen/Dense>
@@ -69,6 +70,7 @@ bool OccupancyGrid2D<State>::setMap(std::string mapPngFilename, double resolutio
     origin = origin_;
     colDistribution = std::uniform_real_distribution<double>(0, map.cols());
     rowDistribution = std::uniform_real_distribution<double>(0, map.rows());
+    generator.seed(std::chrono::system_clock::now().time_since_epoch().count());
 
     return true;
 }
