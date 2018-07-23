@@ -25,20 +25,13 @@ private:
 
     double searchRadius;
 
-    /**
-     * Nodes is a list so pointers don't get invalidated
-     * as it changes size.
-     */
+    // nodes is a list so pointers don't get invalidated
+    // as it changes size.
     std::list<Node> nodes;
     std::vector<Node *> goalNodes;
 
-    //void insert(const Node &node);
     Node * initNode(const State & state, Node * parent, double cost);
 
-    //std::vector<Node *> nearestNodes(const State * state);
-
-    //Node * growTree(const State & rand, const std::vector<Node*> & nearNodes);
-    //void rewire(Node * rand, const std::vector<Node*> & nearNodes);
     Node * growTree(const State & rand);
     void rewire(Node * rand);
 
