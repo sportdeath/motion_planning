@@ -16,7 +16,7 @@ private:
 
     struct DubinsSampleData {
         std::vector<Pose2D> * samples;
-        int sampleIndex;
+        size_t sampleIndex;
     };
     static int dubinsSampleCallback(double q[3], double x, void * user_data);
 

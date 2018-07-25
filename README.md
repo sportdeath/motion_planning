@@ -1,3 +1,10 @@
+A lightweight and modular implementation of the RRT\* algorithm.
+
+# TODO
+
+- Implement distance function.
+- Implement Reed Shepp curves.
+
 # Building
 
 To build the library independently do:

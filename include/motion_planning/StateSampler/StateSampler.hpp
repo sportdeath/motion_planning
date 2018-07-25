@@ -1,3 +1,6 @@
+#ifndef STATE_SAMPLER_HPP
+#define STATE_SAMPLER_HPP
+
 #include <functional>
 #include <random>
 
@@ -62,3 +65,5 @@ public:
 
     State sample();
 };
+
+#endif // STATE_SAMPLER_HPP
