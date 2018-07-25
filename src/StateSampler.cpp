@@ -82,7 +82,7 @@ MixedSampler<State>::MixedSampler(
 
     // Accumulate probability
     cumulativeProbabilities[0] = weights[0]/totalWeight;
-    for (int i = 1; i < weights.size(); i++) {
+    for (size_t i = 1; i < weights.size(); i++) {
         cumulativeProbabilities[i] = weights[i]/totalWeight + cumulativeProbabilities[i-1];
     }
 
@@ -94,11 +94,14 @@ template<class State>
 State MixedSampler<State>::sample() {
     double choice = choiceDistribution(generator);
 
-    for (int i = 0; i < samplers.size(); i++) {
+    for (size_t i = 0; i < samplers.size(); i++) {
         if (choice < cumulativeProbabilities[i]) {
             return samplers[i] -> sample();
         }
     }
+
+    return samplers[0] -> sample();
 }
 
+template class UniformSampler<Pose2D>;
 template class MixedSampler<Pose2D>;

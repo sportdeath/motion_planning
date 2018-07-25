@@ -54,6 +54,8 @@ private:
     std::uniform_real_distribution<double> choiceDistribution;
 
 public:
+    MixedSampler() {};
+
     MixedSampler(
         std::vector<StateSampler<State> *> & samplers_,
         std::vector<double> & weights);

@@ -7,7 +7,7 @@
 #include <motion_planning/Steer/DubinsSteer.hpp>
 #include <motion_planning/StateSampler/StateSampler.hpp>
 
-int main(int argc, char **argv) {
+int main() {
     DubinsSteer dubinsSteer(0.3);
 
     OccupancyGrid2D<Pose2D> classroom;

@@ -69,7 +69,7 @@ TEST_F(RRTStarTest, RRTStarSamplePath) {
         searchRadius);
 
 
-    RRTStar<Pose2D>::Node * lastNode;
+    RRTStar<Pose2D>::Node * lastNode = NULL;
     int count = 0;
     for (int i = 0; i < 1000; i++) {
         RRTStar<Pose2D>::Node * node = rrt.iterate();
@@ -79,22 +79,22 @@ TEST_F(RRTStarTest, RRTStarSamplePath) {
             lastNode = node;
         }
     }
-
     ASSERT_GT(count, 0);
 
     double sampleResolution = 0.1;
-
-    std::vector<Pose2D> path = rrt.samplePath(lastNode, sampleResolution);
-
-    EXPECT_GT(path.size(), 0);
-
     std::vector<std::vector<Pose2D>> tree = rrt.sampleTree(sampleResolution);
     size_t treeSize = 0;
     for (auto vec = tree.begin(); vec < tree.end(); vec++) { 
         treeSize += (*vec).size();
     }
 
-    EXPECT_GT(treeSize, path.size());
+
+    if (lastNode != NULL) {
+        std::vector<Pose2D> path = rrt.samplePath(lastNode, sampleResolution);
+
+        EXPECT_GT(path.size(), 0);
+        EXPECT_GT(treeSize, path.size());
+    }
 }
 
 int main(int argc, char **argv) {

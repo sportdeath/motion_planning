@@ -4,6 +4,14 @@ project(motion_planning)
 
 set(CMAKE_CXX_STANDARD 11)
 
+if(NOT CMAKE_BUILD_TYPE)
+  set (CMAKE_BUILD_TYPE Release)
+endif()
+
+set(CMAKE_CXX_FLAGS "-Wall -Wextra")
+set(CMAKE_CXX_FLAGS_DEBUG "-g")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+
 ######################################
 # Add external projects >
 ######################################
@@ -13,6 +21,7 @@ include(ExternalProject)
 # Add Dubin's Curves
 ExternalProject_Add(dubins_proj
     GIT_REPOSITORY https://github.com/AndrewWalker/Dubins-Curves
+    CMAKE_ARGS -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS_RELEASE}
     UPDATE_COMMAND ""
     INSTALL_COMMAND ""
     )
@@ -25,6 +34,7 @@ set(DEPS ${DEPS} dubins_proj)
 # Add PNG
 ExternalProject_Add(png_proj
     GIT_REPOSITORY git://git.code.sf.net/p/libpng/code
+    CMAKE_ARGS -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS_RELEASE}
     UPDATE_COMMAND ""
     INSTALL_COMMAND ""
     )
@@ -103,7 +113,6 @@ endforeach()
 file(GLOB MAP_FILES test/maps/*.png)
 foreach(_map_file ${MAP_FILES})
     get_filename_component(_map_name ${_map_file} NAME)
-    message(${_map_name})
     configure_file(${_map_file} maps/${_map_name} COPYONLY)
 endforeach()
 
