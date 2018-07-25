@@ -41,6 +41,55 @@
 #include <algorithm>
 #include "motion_planning/Steer/ReedsSheppSteer.hpp"
 
+bool ReedsSheppSteer::steer(const Pose2D * start_, const Pose2D * end_) {
+    end = *end_;
+    start[0] = start_ -> x;
+    start[1] = start_ -> y;
+    start[2] = start_ -> theta;
+    
+    double q1[] = {end.x, end.y, end.theta};
+    path = space.reedsShepp(start, q1);
+
+    return true;
+}
+
+int ReedsSheppSteer::sampleCallback(double q[3], void * user_data) {
+    // Construct a pose
+    Pose2D pose = {.x = q[0], .y = q[1], .theta = q[2]};
+    
+    // Add it to the vector
+    SampleData * data = (SampleData *) user_data;
+    if (data -> sampleIndex < data -> samples -> size()) {
+        (*data -> samples)[data -> sampleIndex] = pose;
+    }
+
+    // Increase the index
+    data -> sampleIndex ++;
+
+    return 0;
+}
+
+std::vector<Pose2D> ReedsSheppSteer::sample(double resolution) {
+    // Initialize the output vector
+    int numSamples = cost()/resolution + 1;
+    std::vector<Pose2D> samples(numSamples);
+
+    // Initialize the data passed to the callback function
+    SampleData data = {.samples = &samples, .sampleIndex = 0};
+
+    // Sample the vector
+    space.sample(path, start, resolution, sampleCallback, (void *) &data);
+
+    // Add the end point
+    samples[numSamples-1] = end;
+
+    return samples;
+}
+
+double ReedsSheppSteer::cost() {
+    return path.length();
+}
+
 namespace
 {
     // The comments, variable names, etc. use the nomenclature from the Reeds & Shepp paper.
@@ -558,9 +607,8 @@ void ReedsSheppStateSpace::type(double q0[3], double q1[3], ReedsSheppPathTypeCa
     return;
 }
 
-void ReedsSheppStateSpace::sample(double q0[3], double q1[3], double step_size, ReedsSheppPathSamplingCallback cb, void* user_data)
+void ReedsSheppStateSpace::sample(ReedsSheppPath & path, double q0[3], double step_size, ReedsSheppPathSamplingCallback cb, void* user_data)
 {
-    ReedsSheppPath path = reedsShepp(q0, q1);
     double dist = rho_ * path.length();
 
     for (double seg=0.0; seg<=dist; seg+=step_size){

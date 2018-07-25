@@ -3,7 +3,7 @@ A lightweight and modular implementation of the RRT\* algorithm.
 # TODO
 
 - Implement distance function.
-- Implement Reed Shepp curves.
+- Implement Reed Shepp curves -> make midpoint function. midpoint makes a smaller class that calls the original class.
 
 # Building
 

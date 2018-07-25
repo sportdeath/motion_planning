@@ -38,6 +38,9 @@
 #ifndef REEDS_SHEPP_STEER_HPP
 #define REEDS_SHEPP_STEER_HPP
 
+#include "motion_planning/Steer/Steer.hpp"
+#include "motion_planning/State/Pose2D.hpp"
+
 typedef int (*ReedsSheppPathSamplingCallback)(double q[3], void* user_data);
 typedef int (*ReedsSheppPathTypeCallback)(int t, void* user_data);
 
@@ -73,7 +76,7 @@ public:
 
     void type(double q0[3], double q1[3], ReedsSheppPathTypeCallback cb, void* user_data);
 
-    void sample(double q0[3], double q1[3], double step_size, ReedsSheppPathSamplingCallback cb, void* user_data);
+    void sample(ReedsSheppPath & path, double q0[3], double step_size, ReedsSheppPathSamplingCallback cb, void* user_data);
 
     /** \brief Return the shortest Reeds-Shepp path from SE(2) state state1 to SE(2) state state2 */
     ReedsSheppPath reedsShepp(double q0[3], double q1[3]);
@@ -83,6 +86,30 @@ protected:
 
     /** \brief Turning radius */
     double rho_;
+};
+
+class ReedsSheppSteer : public Steer<Pose2D> {
+private:
+    double start[3];
+    Pose2D end;
+    ReedsSheppStateSpace space;
+
+    ReedsSheppStateSpace::ReedsSheppPath path;
+
+    struct SampleData {
+        std::vector<Pose2D> * samples;
+        size_t sampleIndex;
+    };
+    static int sampleCallback(double q[3], void * user_data);
+
+public:
+    ReedsSheppSteer(double turningRadius_) : space(turningRadius_) {};
+
+    bool steer(const Pose2D * start, const Pose2D * end);
+
+    std::vector<Pose2D> sample(double resolution);
+
+    double cost();
 };
 
 #endif // REEDS_SHEPP_STEER_HPP
