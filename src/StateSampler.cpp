@@ -56,7 +56,7 @@ Pose2D BridgeSampler::sample() {
         if (occupancy -> isOccupied(&near)) {
 
             // check if the midpoint is free
-            Pose2D midpoint = {.x=(occ.x+near.x)/2., .y=(occ.x+near.y)/2., .theta=0.};
+            Pose2D midpoint = {.x=(occ.x+near.x)/2., .y=(occ.y+near.y)/2., .theta=0.};
 
             if (occupancy -> isFree(&midpoint)) {
                  double theta = atan2(occ.x - near.x, near.y - occ.y);

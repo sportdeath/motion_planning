@@ -1,7 +1,8 @@
 #include <functional>
 #include <random>
 
-#include <motion_planning/Occupancy/Occupancy.hpp>
+#include "motion_planning/State/Pose2D.hpp"
+#include "motion_planning/Occupancy/Occupancy.hpp"
 
 template<class State>
 class StateSampler {
