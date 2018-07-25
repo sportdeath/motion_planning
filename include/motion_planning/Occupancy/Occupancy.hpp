@@ -41,17 +41,10 @@ public:
      */
     virtual bool isSteerFree(Steer<State> * steer) const = 0;
 
+    /**
+     * Sample a state uniformly at random.
+     */
     virtual void randomState(State * state) = 0;
-
-    /**
-     * Sample a free state uniformly at random.
-     */
-    virtual State sampleFree() = 0;
-
-    /**
-     * Sample occupied or unknown states that border free states.
-     */
-    virtual State samplePerimeter(bool unknown=false) = 0;
 };
 
 #endif // OCCUPANCY_HPP

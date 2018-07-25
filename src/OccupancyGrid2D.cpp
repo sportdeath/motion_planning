@@ -172,47 +172,6 @@ void OccupancyGrid2D<Pose2D>::randomState(Pose2D * state) {
     state -> theta = thetaDistribution(generator);
 }
 
-template<>
-Pose2D OccupancyGrid2D<Pose2D>::sampleFree() {
-    Pose2D state;
-
-    while (true) {
-        // Choose a random state in the map
-        randomState(&state);
-
-        if (Occupancy::isFree(&state)) {
-            return state;
-        }
-    }
-}
-
-template<>
-Pose2D OccupancyGrid2D<Pose2D>::samplePerimeter(bool unknown) {
-    Pose2D state;
-    Pose2D stateNear;
-    
-    while (true) {
-        // Choose a random state in the map
-        randomState(&state);
-
-        if ((unknown and isUnknown(&state)) or ((not unknown) and isOccupied(&state))) {
-            // Find an adjacent state that is free
-            stateNear.theta = state.theta;
-
-            for (int i = -1; i <= 1; i+=2) {
-                stateNear.x = state.x + i * resolution;
-                stateNear.y = state.y;
-                if (Occupancy::isFree(&stateNear)) return state;
-
-                stateNear.x = state.x;
-                stateNear.y = state.y + i * resolution;
-                if (Occupancy::isFree(&stateNear)) return state;
-            }
-
-        }
-    }
-}
-
 template class OccupancyGrid2D<Pose2D>;
 template bool OccupancyGrid2D<Pose2D>::setMap<uint8_t>(const std::vector<uint8_t> &, size_t, size_t, double, Pose2D);
 template bool OccupancyGrid2D<Pose2D>::setMap<int8_t>(const std::vector<int8_t> &, size_t, size_t, double, Pose2D);

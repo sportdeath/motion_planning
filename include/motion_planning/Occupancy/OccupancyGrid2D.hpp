@@ -43,8 +43,6 @@ public:
 
     double occupancyProbability(const State * state) const;
     bool isSteerFree(Steer<State> * steer) const;
-    State sampleFree();
-    State samplePerimeter(bool unknown=false);
     double freeThreshold() const {return 0.4;};
     double occupiedThreshold() const {return 0.6;};
     void randomState(State * state);

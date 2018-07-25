@@ -1,4 +1,7 @@
 #include <cmath>
+#include <random>
+#include <chrono>
+#include <iostream>
 
 #include <motion_planning/State/Pose2D.hpp>
 #include <motion_planning/StateSampler/StateSampler.hpp>
@@ -16,7 +19,7 @@ UniformSampler<State>::UniformSampler(
 {}
 
 template<class State>
-State UniformSampler<State>::sample() const {
+State UniformSampler<State>::sample() {
     Pose2D state;
 
     while (true) {
@@ -31,19 +34,22 @@ State UniformSampler<State>::sample() const {
     }
 }
 
-BridgeSampler::BridgeSampler(Occupancy<Pose2D> * occupancy_) :
+BridgeSampler::BridgeSampler(Occupancy<Pose2D> * occupancy_, double stdDev) :
     occupancy(occupancy_),
-    sampleOccupied(occupancy, false, false, true)
-{}
+    sampleOccupied(occupancy, false, false, true),
+    normalDistribution(0., stdDev)
+{
+    generator.seed(std::chrono::system_clock::now().time_since_epoch().count());
+}
 
-Pose2D BridgeSampler::sample() const {
+Pose2D BridgeSampler::sample() {
     while (true) {
         // Choose a random occupied state
         Pose2D occ = sampleOccupied.sample();
         
         // Choose a nearby point
-        double x_noise = 0;
-        double y_noise = 0;
+        double x_noise = normalDistribution(generator);
+        double y_noise = normalDistribution(generator);
         Pose2D near = {.x=occ.x + x_noise, .y=occ.y + y_noise, .theta=0.};
 
         // Check if the nearby point is occupied
@@ -67,25 +73,32 @@ MixedSampler<State>::MixedSampler(
         std::vector<double> & weights) :
     samplers(samplers_)
 {
-    std::vector<double> cumulativeProbabilities(weights.size());
+    cumulativeProbabilities = std::vector<double>(weights.size());
 
     double totalWeight = 0;
-    for (auto & weight : weights) totalWeight += weight;
+    for (auto & weight : weights) {
+        totalWeight += weight;
+    }
 
     // Accumulate probability
     cumulativeProbabilities[0] = weights[0]/totalWeight;
     for (int i = 1; i < weights.size(); i++) {
         cumulativeProbabilities[i] = weights[i]/totalWeight + cumulativeProbabilities[i-1];
     }
+
+    choiceDistribution = std::uniform_real_distribution<double>(0., 1.);
+    generator.seed(std::chrono::system_clock::now().time_since_epoch().count());
 }
 
 template<class State>
-State MixedSampler<State>::sample() const {
-    double choice = 0;
+State MixedSampler<State>::sample() {
+    double choice = choiceDistribution(generator);
 
     for (int i = 0; i < samplers.size(); i++) {
         if (choice < cumulativeProbabilities[i]) {
-            return samplers[i].sample();
+            return samplers[i] -> sample();
         }
     }
 }
+
+template class MixedSampler<Pose2D>;

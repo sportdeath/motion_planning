@@ -5,6 +5,7 @@
 #include <motion_planning/State/Pose2D.hpp>
 #include <motion_planning/Occupancy/OccupancyGrid2D.hpp>
 #include <motion_planning/Steer/DubinsSteer.hpp>
+#include <motion_planning/StateSampler/StateSampler.hpp>
 
 int main(int argc, char **argv) {
     DubinsSteer dubinsSteer(0.3);
@@ -17,10 +18,12 @@ int main(int argc, char **argv) {
     Pose2D start = {.x=1, .y=1, .theta=0};
     double searchRadius = 3.;
 
+    UniformSampler<Pose2D> sampleFree(&classroom);
+
     RRTStar<Pose2D> rrt(
         &dubinsSteer,
         &classroom,
-        std::bind(&OccupancyGrid2D<Pose2D>::sampleFree, classroom),
+        sampleFree.sampleFunction(),
         std::bind(&OccupancyGrid2D<Pose2D>::isUnknown, classroom, std::placeholders::_1),
         start,
         searchRadius);
