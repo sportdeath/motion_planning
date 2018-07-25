@@ -41,6 +41,8 @@ public:
      */
     virtual bool isSteerFree(Steer<State> * steer) const = 0;
 
+    virtual void randomState(State * state) = 0;
+
     /**
      * Sample a free state uniformly at random.
      */
