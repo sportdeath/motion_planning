@@ -103,5 +103,34 @@ State MixedSampler<State>::sample() {
     return samplers[0] -> sample();
 }
 
+RadialSampler::RadialSampler(Occupancy<Pose2D> * occupancy_, double radius_) :
+    occupancy(occupancy_),
+    radius(radius_)
+{
+    generator.seed(std::chrono::system_clock::now().time_since_epoch().count());
+}
+
+void RadialSampler::setCenter(Pose2D * state) {
+    center = *state;
+}
+
+Pose2D RadialSampler::sample() {
+    // Sample uniformly from a disk
+    Pose2D state;
+
+    while (true) {
+        double r = radius * sqrt(realDistribution(generator));
+        double phi = 2 * M_PI * realDistribution(generator);
+
+        state.x = r * cos(phi) + center.x;
+        state.y = r * sin(phi) + center.y;
+        state.theta = 2 * M_PI * realDistribution(generator);
+
+        if (occupancy -> isFree(&state)) {
+            return state;
+        }
+    }
+}
+
 template class UniformSampler<Pose2D>;
 template class MixedSampler<Pose2D>;
