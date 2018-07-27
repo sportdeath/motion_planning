@@ -1,9 +1,11 @@
 #include <iostream> 
+#include <cmath>
 
 extern "C" {
 #include <dubins.h>
 }
 #include "motion_planning/Steer/DubinsSteer.hpp" 
+
 bool DubinsSteer::steer(const Pose2D * start, const Pose2D * end) {
     double q0[] = {start -> x, start -> y, start -> theta};
     double q1[] = {end -> x, end -> y, end -> theta};
@@ -50,4 +52,10 @@ std::vector<Pose2D> DubinsSteer::sample(double resolution) {
 
 double DubinsSteer::cost() {
     return dubins_path_length(&path);
+}
+
+double DubinsSteer::lowerBoundCost(const Pose2D * start, const Pose2D * end) const {
+    double x = (start -> x - end -> x);
+    double y = (start -> y - end -> y);
+    return sqrt(x*x + y*y);
 }

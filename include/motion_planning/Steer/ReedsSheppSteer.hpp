@@ -81,11 +81,11 @@ public:
     /** \brief Return the shortest Reeds-Shepp path from SE(2) state state1 to SE(2) state state2 */
     ReedsSheppPath reedsShepp(double q0[3], double q1[3]);
 
-protected:
-    void interpolate(double q0[3], ReedsSheppPath &path, double seg, double q[3]);
-
     /** \brief Turning radius */
     double rho_;
+
+protected:
+    void interpolate(double q0[3], ReedsSheppPath &path, double seg, double q[3]);
 };
 
 class ReedsSheppSteer : public Steer<Pose2D> {
@@ -110,6 +110,7 @@ public:
     std::vector<Pose2D> sample(double resolution);
 
     double cost();
+    double lowerBoundCost(const Pose2D * state, const Pose2D * end) const;
 };
 
 #endif // REEDS_SHEPP_STEER_HPP

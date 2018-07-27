@@ -28,6 +28,8 @@ public:
     std::vector<Pose2D> sample(double resolution);
 
     double cost();
+
+    double lowerBoundCost(const Pose2D * state, const Pose2D * end) const;
 };
 
 #endif // DUBINS_STEER_HPP

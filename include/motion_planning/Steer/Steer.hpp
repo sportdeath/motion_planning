@@ -14,6 +14,7 @@ public:
      */
     virtual bool steer(const State * start, const State * end) = 0;
 
+
     /**
      * Samples the steer path until the cost between
      * adjacent points is less than or equal to the
@@ -25,6 +26,13 @@ public:
      * Returns the cost of the steer.
      */
     virtual double cost() = 0;
+
+    /**
+     * Return a lower bound on the cost between
+     * two states. This should be easier to compute
+     * than the actual cost.
+     */
+    virtual double lowerBoundCost(const State * sate, const State * end) const = 0;
 };
 
 #endif // STEER_HPP

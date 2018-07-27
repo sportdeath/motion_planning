@@ -35,6 +35,10 @@ typename RRTStar<State>::Node * RRTStar<State>::growTree(const State & rand) {
 
     for (auto node = nodes.begin(); node != nodes.end(); node++) { 
 
+        // Use the lower bound on the cost to filter nodes
+        double lowerBoundCost = steer -> lowerBoundCost(&((*node).state), &rand);
+        if (lowerBoundCost > searchRadius) continue;
+
         // Compute the steer from the nearest node to the random node
         bool validSteer = steer -> steer(&((*node).state), &rand);
 
