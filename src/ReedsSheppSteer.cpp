@@ -87,7 +87,13 @@ std::vector<Pose2D> ReedsSheppSteer::sample(double resolution) {
 }
 
 double ReedsSheppSteer::cost() {
-    return path.length();
+    return space.rho_ * path.length();
+}
+
+double ReedsSheppSteer::lowerBoundCost(const Pose2D * start, const Pose2D * end) const {
+    double x = (start -> x - end -> x);
+    double y = (start -> y - end -> y);
+    return sqrt(x*x + y*y);
 }
 
 namespace
@@ -609,11 +615,11 @@ void ReedsSheppStateSpace::type(double q0[3], double q1[3], ReedsSheppPathTypeCa
 
 void ReedsSheppStateSpace::sample(ReedsSheppPath & path, double q0[3], double step_size, ReedsSheppPathSamplingCallback cb, void* user_data)
 {
-    double dist = path.length();
+    double dist = rho_ * path.length();
 
     for (double seg=0.0; seg<=dist; seg+=step_size){
         double qnew[3] = {};
-        interpolate(q0, path, seg, qnew);
+        interpolate(q0, path, seg/rho_, qnew);
         cb( qnew, user_data);
     }
     return;
