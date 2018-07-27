@@ -609,11 +609,11 @@ void ReedsSheppStateSpace::type(double q0[3], double q1[3], ReedsSheppPathTypeCa
 
 void ReedsSheppStateSpace::sample(ReedsSheppPath & path, double q0[3], double step_size, ReedsSheppPathSamplingCallback cb, void* user_data)
 {
-    double dist = rho_ * path.length();
+    double dist = path.length();
 
     for (double seg=0.0; seg<=dist; seg+=step_size){
         double qnew[3] = {};
-        interpolate(q0, path, seg/rho_, qnew);
+        interpolate(q0, path, seg, qnew);
         cb( qnew, user_data);
     }
     return;
