@@ -5,18 +5,18 @@
 #include <vector>
 
 #include <motion_planning/State/Pose2D.hpp>
-#include <motion_planning/Steer/DubinsSteer.hpp>
+#include <motion_planning/Steer/ReedsSheppSteer.hpp>
 
-class DubinsSteerTest : public ::testing::Test {};
+class ReedsSheppSteerTest : public ::testing::Test {};
 
-TEST_F(DubinsSteerTest, InitSteer) {
+TEST_F(ReedsSheppSteerTest, InitSteer) {
     double turningRadius = 1.;
-    DubinsSteer steer(turningRadius);
+    ReedsSheppSteer steer(turningRadius);
 }
 
-TEST_F(DubinsSteerTest, CreateSteer) {
+TEST_F(ReedsSheppSteerTest, CreateSteer) {
     double turningRadius = 1.;
-    DubinsSteer steer(turningRadius);
+    ReedsSheppSteer steer(turningRadius);
 
     Pose2D start = {.x=0, .y=0, .theta=0};
     Pose2D end = {.x=1, .y=1, .theta=1};
@@ -24,9 +24,9 @@ TEST_F(DubinsSteerTest, CreateSteer) {
     steer.steer(&start, &end);
 }
 
-TEST_F(DubinsSteerTest, ApproximatelyLinearSteer) {
+TEST_F(ReedsSheppSteerTest, ApproximatelyLinearSteer) {
     double turningRadius = 0.00001;
-    DubinsSteer steer(turningRadius);
+    ReedsSheppSteer steer(turningRadius);
 
     // The length of this steer should
     // be approximately 5 (3-4-5 triangle)
@@ -38,14 +38,14 @@ TEST_F(DubinsSteerTest, ApproximatelyLinearSteer) {
     ASSERT_NEAR(5., steer.cost(), 0.0001);
 }
 
-TEST_F(DubinsSteerTest, HalfCircle) {
+TEST_F(ReedsSheppSteerTest, HalfCircle) {
     // The optimal path should be a half circle
     // with radius 1
     double turningRadius = 1.;
     Pose2D start = {.x=0, .y=-1, .theta=0};
     Pose2D end = {.x=0, .y=1, .theta=M_PI};
 
-    DubinsSteer steer(turningRadius);
+    ReedsSheppSteer steer(turningRadius);
 
     steer.steer(&start, &end);
 

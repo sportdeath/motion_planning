@@ -4,12 +4,12 @@
 #include <motion_planning/RRTStar.hpp>
 #include <motion_planning/State/Pose2D.hpp>
 #include <motion_planning/Occupancy/OccupancyGrid2D.hpp>
-#include <motion_planning/Steer/DubinsSteer.hpp>
+#include <motion_planning/Steer/ReedsSheppSteer.hpp>
 #include <motion_planning/StateSampler/StateSampler.hpp>
 
 class RRTStarTest : public ::testing::Test {
     public:
-        DubinsSteer dubinsSteer;
+        ReedsSheppSteer steer;
         OccupancyGrid2D<Pose2D> classroom;
         std::function<bool(const Pose2D *)> goalClassroom;
         static constexpr double searchRadius = 3.;
@@ -17,7 +17,7 @@ class RRTStarTest : public ::testing::Test {
         UniformSampler<Pose2D> sampleFree;
 
         RRTStarTest() :
-            dubinsSteer(1.),
+            steer(1.),
             sampleFree(&classroom)
         {
 
@@ -32,7 +32,7 @@ class RRTStarTest : public ::testing::Test {
 TEST_F(RRTStarTest, InitializeRRTStar) {
     Pose2D start = {.x=0, .y=0, .theta=0};
     RRTStar<Pose2D> rrt(
-        &dubinsSteer, 
+        &steer, 
         &classroom, 
         sampleFree.sampleFunction(),
         goalClassroom,
@@ -43,7 +43,7 @@ TEST_F(RRTStarTest, InitializeRRTStar) {
 TEST_F(RRTStarTest, RRTStarIterate) {
     Pose2D start = {.x=1, .y=1, .theta=0.5};
     RRTStar<Pose2D> rrt(
-        &dubinsSteer, 
+        &steer, 
         &classroom, 
         sampleFree.sampleFunction(),
         goalClassroom,
@@ -61,7 +61,7 @@ TEST_F(RRTStarTest, RRTStarIterate) {
 TEST_F(RRTStarTest, RRTStarSamplePath) {
     Pose2D start = {.x=5, .y=4, .theta=-0.5};
     RRTStar<Pose2D> rrt(
-        &dubinsSteer, 
+        &steer, 
         &classroom, 
         sampleFree.sampleFunction(),
         goalClassroom,

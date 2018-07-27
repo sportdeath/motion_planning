@@ -18,19 +18,6 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 include(ExternalProject)
 
-# Add Dubin's Curves
-ExternalProject_Add(dubins_proj
-    GIT_REPOSITORY https://github.com/AndrewWalker/Dubins-Curves
-    CMAKE_ARGS -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS_RELEASE}
-    UPDATE_COMMAND ""
-    INSTALL_COMMAND ""
-    )
-ExternalProject_Get_Property(dubins_proj SOURCE_DIR BINARY_DIR)
-include_directories(${SOURCE_DIR}/include)
-link_directories(${BINARY_DIR})
-set(LIBS ${LIBS} dubins)
-set(DEPS ${DEPS} dubins_proj)
-
 # Add PNG
 ExternalProject_Add(png_proj
     GIT_REPOSITORY git://git.code.sf.net/p/libpng/code
