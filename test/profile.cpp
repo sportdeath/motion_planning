@@ -4,11 +4,11 @@
 #include <motion_planning/RRTStar.hpp>
 #include <motion_planning/State/Pose2D.hpp>
 #include <motion_planning/Occupancy/OccupancyGrid2D.hpp>
-#include <motion_planning/Steer/DubinsSteer.hpp>
+#include <motion_planning/Steer/ReedsSheppSteer.hpp>
 #include <motion_planning/StateSampler/StateSampler.hpp>
 
 int main() {
-    DubinsSteer dubinsSteer(0.3);
+    ReedsSheppSteer steer(0.3);
 
     OccupancyGrid2D<Pose2D> classroom;
     double resolution = 0.05;
@@ -16,12 +16,12 @@ int main() {
     classroom.setMap("maps/classroom_incomplete.png", resolution, origin);
 
     Pose2D start = {.x=1, .y=1, .theta=0};
-    double searchRadius = 3.;
+    double searchRadius = 5.;
 
     UniformSampler<Pose2D> sampleFree(&classroom);
 
     RRTStar<Pose2D> rrt(
-        &dubinsSteer,
+        &steer,
         &classroom,
         sampleFree.sampleFunction(),
         std::bind(&OccupancyGrid2D<Pose2D>::isUnknown, classroom, std::placeholders::_1),
@@ -29,7 +29,7 @@ int main() {
         searchRadius);
 
     int count = 0;
-    for (int i = 0; i < 1000; i++) {
+    for (int i = 0; i < 500; i++) {
         if (rrt.iterate()) count++;
     }
     std::cout << "Finished" << std::endl;

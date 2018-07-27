@@ -137,8 +137,8 @@ double OccupancyGrid2D<Pose2D>::occupancyProbability(const Pose2D * state) const
     double y_rot = x_trans * sin(origin.theta) + y_trans * cos(origin.theta);
 
     // Discretize the state into a cell
-    int x_cell = std::floor(x_rot/resolution);
-    int y_cell = std::floor(y_rot/resolution);
+    size_t x_cell = std::floor(x_rot/resolution);
+    size_t y_cell = std::floor(y_rot/resolution);
 
     if ((0 <= x_cell) and (x_cell < width) and (0 <= y_cell) and (y_cell < height)) {
         // The cell is in the map, use the value from it
