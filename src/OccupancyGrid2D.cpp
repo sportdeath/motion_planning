@@ -133,44 +133,62 @@ double OccupancyGrid2D<State>::occupancyProbability(size_t cell) const {
 
 template<class State>
 double OccupancyGrid2D<State>::occupancyProbability(size_t row, size_t col) const {
-    return occupancyProbability(row * width + col);
+    return occupancyProbability(rowColToCell(row, col));
 }
 
-template<>
-double OccupancyGrid2D<Pose2D>::occupancyProbability(const Pose2D * state) const {
-    // Translate the state by the origin
-    double x_trans = state -> x - origin.x;
-    double y_trans = state -> y - origin.y;
+template<class State>
+size_t OccupancyGrid2D<State>::rowColToCell(size_t row, size_t col) const {
+    return row * width + col;
+}
 
-    // Rotate the state into the map
-    double x_rot = x_trans * cos(origin.theta) - y_trans * sin(origin.theta);
-    double y_rot = x_trans * sin(origin.theta) + y_trans * cos(origin.theta);
 
-    // Discretize the state into a cell
-    size_t x_cell = std::floor(x_rot/resolution);
-    size_t y_cell = std::floor(y_rot/resolution);
+template<class State>
+double OccupancyGrid2D<State>::occupancyProbability(const State * state) const {
+    // Convert the state to a cell
+    size_t row, col;
+    stateToRowCol(state, row, col);
 
-    if ((0 <= x_cell) and (x_cell < width) and (0 <= y_cell) and (y_cell < height)) {
+    if ((0 <= col) and (col < width) and (0 <= row) and (row < height)) {
         // The cell is in the map, use the value from it
-        return occupancyProbability(y_cell, x_cell);
+        return occupancyProbability(row, col);
     } else {
         // If the cell is outside of the map, assume it is unknown
         return 0.5;
    }
 }
 
-template<>
-bool OccupancyGrid2D<Pose2D>::isSteerFree(Steer<Pose2D> * steer) const {
+template<class State>
+bool OccupancyGrid2D<State>::isSteerFree(Steer<State> * steer) const {
     // Sample the state at the resolution of the map
-    std::vector<Pose2D> samples = steer -> sample(resolution);
+    std::vector<State> samples = steer -> sample(resolution);
 
     bool isFree_ = true;
 
     for (auto sample = samples.begin(); sample < samples.end(); sample++) {
-        isFree_ &= Occupancy::isFree(&*sample);
+        isFree_ &= Occupancy<State>::isFree(&*sample);
     }
 
     return isFree_;
+}
+
+template<>
+void OccupancyGrid2D<Pose2D>::stateToRowCol(const Pose2D * state, size_t & row, size_t & col) const {
+    return xyToRowCol(state -> x, state -> y, row, col);
+}
+
+template<class State>
+void OccupancyGrid2D<State>::xyToRowCol(double x, double y, size_t & row, size_t & col) const {
+    // Translate the state by the origin
+    double x_trans = x - origin.x;
+    double y_trans = y - origin.y;
+
+    // Rotate the state into the map
+    double x_rot = x_trans * cos(origin.theta) - y_trans * sin(origin.theta);
+    double y_rot = x_trans * sin(origin.theta) + y_trans * cos(origin.theta);
+
+    // Discretize the state into a cell
+    col = std::floor(x_rot/resolution);
+    row = std::floor(y_rot/resolution);
 }
 
 template<>

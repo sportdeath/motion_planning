@@ -31,6 +31,7 @@ public:
     OccupancyGrid2D();
     size_t getWidth() {return width;};
     size_t getHeight() {return height;};
+    double getResolution() {return resolution;};
 
     /**
      * Set the map of the occupancy grid to a png.
@@ -46,6 +47,10 @@ public:
     double occupancyProbability(const State * state) const;
     double occupancyProbability(size_t cell) const;
     double occupancyProbability(size_t row, size_t col) const;
+
+    size_t rowColToCell(size_t row, size_t col) const;
+    void stateToRowCol(const Pose2D * state, size_t & row, size_t & col) const;
+    void xyToRowCol(double x, double y, size_t & row, size_t & col) const;
 
     bool isSteerFree(Steer<State> * steer) const;
     double freeThreshold() const {return 0.4;};
