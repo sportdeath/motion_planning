@@ -97,6 +97,46 @@ TEST_F(RRTStarTest, RRTStarSamplePath) {
     }
 }
 
+TEST_F(RRTStarTest, RRTStarCostConsistency) {
+
+    // Create an RRT
+    Pose2D start = {.x=5, .y=4, .theta=-0.5};
+    RRTStar<Pose2D> rrt(
+        &steer, 
+        &classroom, 
+        sampleFree.sampleFunction(),
+        goalClassroom,
+        start,
+        searchRadius);
+
+
+    // Iterate
+    for (int i = 0; i < 1000; i++) {
+        rrt.iterate();
+    }
+
+    // For each node
+    RRTStar<Pose2D>::Node * n;
+    for (RRTStar<Pose2D>::Node node : rrt.getNodes()) {
+        double cost = 0;
+
+        n = &node;
+
+        // Accumulate the total cost
+        while (n -> parent != NULL) {
+            bool validSteer = steer.steer(&n -> parent -> state, &n -> state);
+
+            if (validSteer) {
+                cost += steer.cost();
+            }
+
+            n = n -> parent;
+        }
+
+        ASSERT_NEAR(cost, node.cost, 0.00001);
+    }
+}
+
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();

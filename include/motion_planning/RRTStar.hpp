@@ -15,6 +15,7 @@ public:
         Node * parent;
         std::vector<Node *> children;
         double cost;
+        double segmentCost; // the cost from parent to node
     };
 
 private:
@@ -30,10 +31,11 @@ private:
     std::list<Node> nodes;
     std::vector<Node *> goalNodes;
 
-    Node * initNode(const State & state, Node * parent, double cost);
+    Node * initNode(const State & state, Node * parent, double cost, double segmentCost);
 
     Node * growTree(const State & rand);
     void rewire(Node * rand);
+    void updateCosts(Node * node);
 
 public:
     /** 
@@ -62,7 +64,8 @@ public:
      */
     Node * iterate();
 
-    std::vector<Node *> goals() const {return goalNodes;};
+    const std::vector<Node *> getGoals() const {return goalNodes;};
+    const std::list<Node> getNodes() const {return nodes;};
 
     /**
      * Sample the path at approximately the given resolution.
