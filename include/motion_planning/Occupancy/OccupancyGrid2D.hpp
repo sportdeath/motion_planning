@@ -29,6 +29,8 @@ private:
 
 public:
     OccupancyGrid2D();
+    size_t getWidth() {return width;};
+    size_t getHeight() {return height;};
 
     /**
      * Set the map of the occupancy grid to a png.
@@ -42,6 +44,9 @@ public:
     bool setMap(std::string mapPngFile, double resolution, State origin);
 
     double occupancyProbability(const State * state) const;
+    double occupancyProbability(size_t cell) const;
+    double occupancyProbability(size_t row, size_t col) const;
+
     bool isSteerFree(Steer<State> * steer) const;
     double freeThreshold() const {return 0.4;};
     double occupiedThreshold() const {return 0.6;};

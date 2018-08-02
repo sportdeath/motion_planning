@@ -126,6 +126,16 @@ bool OccupancyGrid2D<State>::setMap(std::string mapPngFilename, double resolutio
     return true;
 }
 
+template<class State>
+double OccupancyGrid2D<State>::occupancyProbability(size_t cell) const {
+    return map[cell];
+}
+
+template<class State>
+double OccupancyGrid2D<State>::occupancyProbability(size_t row, size_t col) const {
+    return occupancyProbability(row * width + col);
+}
+
 template<>
 double OccupancyGrid2D<Pose2D>::occupancyProbability(const Pose2D * state) const {
     // Translate the state by the origin
@@ -142,7 +152,7 @@ double OccupancyGrid2D<Pose2D>::occupancyProbability(const Pose2D * state) const
 
     if ((0 <= x_cell) and (x_cell < width) and (0 <= y_cell) and (y_cell < height)) {
         // The cell is in the map, use the value from it
-        return map[y_cell * width + x_cell];
+        return occupancyProbability(y_cell, x_cell);
     } else {
         // If the cell is outside of the map, assume it is unknown
         return 0.5;

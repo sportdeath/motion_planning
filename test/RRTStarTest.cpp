@@ -1,4 +1,5 @@
 #include <functional>
+#include <algorithm>
 
 #include "gtest/gtest.h"
 #include <motion_planning/RRTStar.hpp>
