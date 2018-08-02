@@ -116,8 +116,8 @@ TEST_F(RRTStarTest, RRTStarCostConsistency) {
     }
 
     // For each node
-    RRTStar<Pose2D>::Node * n;
-    for (RRTStar<Pose2D>::Node node : rrt.getNodes()) {
+    const RRTStar<Pose2D>::Node * n;
+    for (const RRTStar<Pose2D>::Node & node : rrt.getNodes()) {
         double cost = 0;
 
         n = &node;
@@ -135,6 +135,45 @@ TEST_F(RRTStarTest, RRTStarCostConsistency) {
 
         ASSERT_NEAR(cost, node.cost, 0.00001);
     }
+}
+
+TEST_F(RRTStarTest, RRTStarParentConsistency) {
+
+    // Create an RRT
+    Pose2D start = {.x=5, .y=4, .theta=-0.5};
+    RRTStar<Pose2D> rrt(
+        &steer, 
+        &classroom, 
+        sampleFree.sampleFunction(),
+        goalClassroom,
+        start,
+        searchRadius);
+
+    // Iterate
+    for (int i = 0; i < 1000; i++) {
+        rrt.iterate();
+    }
+
+    // For each node
+    int nullParents = 0;
+    for (const RRTStar<Pose2D>::Node & node : rrt.getNodes()) {
+        if (node.parent == NULL) {
+            nullParents += 1;
+            continue;
+        }
+
+        // Make sure the node is in it's parents children
+        std::vector<RRTStar<Pose2D>::Node *> parentChildren = node.parent -> children;
+        ASSERT_NE(std::find(parentChildren.begin(), parentChildren.end(), &node), parentChildren.end());
+
+        // For every child make sure the child points to the parent
+        for (RRTStar<Pose2D>::Node * child : node.children) {
+            ASSERT_EQ(&node, child -> parent);
+        }
+    }
+
+    // Make sure only the root has a null parent
+    ASSERT_EQ(nullParents, 1);
 }
 
 int main(int argc, char **argv) {

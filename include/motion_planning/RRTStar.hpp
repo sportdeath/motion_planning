@@ -64,8 +64,8 @@ public:
      */
     Node * iterate();
 
-    const std::vector<Node *> getGoals() const {return goalNodes;};
-    const std::list<Node> getNodes() const {return nodes;};
+    const std::vector<Node *> & getGoals() const {return goalNodes;};
+    const std::list<Node> & getNodes() const {return nodes;};
 
     /**
      * Sample the path at approximately the given resolution.
