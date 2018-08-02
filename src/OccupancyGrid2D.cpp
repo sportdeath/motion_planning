@@ -127,17 +127,17 @@ bool OccupancyGrid2D<State>::setMap(std::string mapPngFilename, double resolutio
 }
 
 template<class State>
-double OccupancyGrid2D<State>::occupancyProbability(size_t cell) const {
+double OccupancyGrid2D<State>::occupancyProbability(int cell) const {
     return map[cell];
 }
 
 template<class State>
-double OccupancyGrid2D<State>::occupancyProbability(size_t row, size_t col) const {
+double OccupancyGrid2D<State>::occupancyProbability(int row, int col) const {
     return occupancyProbability(rowColToCell(row, col));
 }
 
 template<class State>
-size_t OccupancyGrid2D<State>::rowColToCell(size_t row, size_t col) const {
+int OccupancyGrid2D<State>::rowColToCell(int row, int col) const {
     return row * width + col;
 }
 
@@ -145,7 +145,7 @@ size_t OccupancyGrid2D<State>::rowColToCell(size_t row, size_t col) const {
 template<class State>
 double OccupancyGrid2D<State>::occupancyProbability(const State * state) const {
     // Convert the state to a cell
-    size_t row, col;
+    int row, col;
     stateToRowCol(state, row, col);
 
     if ((0 <= col) and (col < width) and (0 <= row) and (row < height)) {
@@ -172,12 +172,12 @@ bool OccupancyGrid2D<State>::isSteerFree(Steer<State> * steer) const {
 }
 
 template<>
-void OccupancyGrid2D<Pose2D>::stateToRowCol(const Pose2D * state, size_t & row, size_t & col) const {
+void OccupancyGrid2D<Pose2D>::stateToRowCol(const Pose2D * state, int & row, int & col) const {
     return xyToRowCol(state -> x, state -> y, row, col);
 }
 
 template<class State>
-void OccupancyGrid2D<State>::xyToRowCol(double x, double y, size_t & row, size_t & col) const {
+void OccupancyGrid2D<State>::xyToRowCol(double x, double y, int & row, int & col) const {
     // Translate the state by the origin
     double x_trans = x - origin.x;
     double y_trans = y - origin.y;

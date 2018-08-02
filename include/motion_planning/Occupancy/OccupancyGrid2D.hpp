@@ -45,12 +45,12 @@ public:
     bool setMap(std::string mapPngFile, double resolution, State origin);
 
     double occupancyProbability(const State * state) const;
-    double occupancyProbability(size_t cell) const;
-    double occupancyProbability(size_t row, size_t col) const;
+    double occupancyProbability(int cell) const;
+    double occupancyProbability(int row, int col) const;
 
-    size_t rowColToCell(size_t row, size_t col) const;
-    void stateToRowCol(const Pose2D * state, size_t & row, size_t & col) const;
-    void xyToRowCol(double x, double y, size_t & row, size_t & col) const;
+    int rowColToCell(int row, int col) const;
+    void stateToRowCol(const Pose2D * state, int & row, int & col) const;
+    void xyToRowCol(double x, double y, int & row, int & col) const;
 
     bool isSteerFree(Steer<State> * steer) const;
     double freeThreshold() const {return 0.4;};
