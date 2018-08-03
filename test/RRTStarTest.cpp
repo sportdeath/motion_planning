@@ -12,7 +12,6 @@ class RRTStarTest : public ::testing::Test {
     public:
         ReedsSheppSteer steer;
         OccupancyGrid2D<Pose2D> classroom;
-        std::function<bool(const Pose2D *)> goalClassroom;
         static constexpr double searchRadius = 3.;
 
         UniformSampler<Pose2D> sampleFree;
@@ -26,7 +25,6 @@ class RRTStarTest : public ::testing::Test {
             Pose2D origin = {.x=0, .y=0, .theta=0};
             classroom.setMap("maps/classroom_incomplete.png", resolution, origin);
 
-            goalClassroom = std::bind(&OccupancyGrid2D<Pose2D>::isUnknown, classroom, std::placeholders::_1);
         }
 };
 
@@ -36,7 +34,6 @@ TEST_F(RRTStarTest, InitializeRRTStar) {
         &steer, 
         &classroom, 
         sampleFree.sampleFunction(),
-        goalClassroom,
         start,
         searchRadius);
 }
@@ -47,7 +44,6 @@ TEST_F(RRTStarTest, RRTStarIterate) {
         &steer, 
         &classroom, 
         sampleFree.sampleFunction(),
-        goalClassroom,
         start,
         searchRadius);
 
@@ -65,7 +61,6 @@ TEST_F(RRTStarTest, RRTStarSamplePath) {
         &steer, 
         &classroom, 
         sampleFree.sampleFunction(),
-        goalClassroom,
         start,
         searchRadius);
 
@@ -106,7 +101,6 @@ TEST_F(RRTStarTest, RRTStarCostConsistency) {
         &steer, 
         &classroom, 
         sampleFree.sampleFunction(),
-        goalClassroom,
         start,
         searchRadius);
 
@@ -146,7 +140,6 @@ TEST_F(RRTStarTest, RRTStarParentConsistency) {
         &steer, 
         &classroom, 
         sampleFree.sampleFunction(),
-        goalClassroom,
         start,
         searchRadius);
 

@@ -22,14 +22,12 @@ private:
     Steer<State> * steer;
     const Occupancy<State> * occupancy;
     const std::function<State(void)> sampleState;
-    const std::function<bool(const State *)> isGoal;
 
     double searchRadius;
 
     // nodes is a list so pointers don't get invalidated
     // as it changes size.
     std::list<Node> nodes;
-    std::vector<Node *> goalNodes;
 
     Node * initNode(const State & state, Node * parent, double cost, double segmentCost);
 
@@ -44,13 +42,11 @@ public:
      * @param steer Determines feasible paths between states in free space.
      * @param occupancy Determines whether a state is in free space.
      * @param stateSampler Samples states in free space.
-     * @param goalChecker Checks whether states are in the goal region.
      */
     RRTStar(
         Steer<State> * steer_, 
         const Occupancy<State> * occupancy_, 
         std::function<State(void)> sampleState_,
-        std::function<bool(const State *)> isGoal_,
         const State & start,
         double searchRadius_);
 
@@ -64,7 +60,6 @@ public:
      */
     Node * iterate();
 
-    const std::vector<Node *> & getGoals() const {return goalNodes;};
     const std::list<Node> & getNodes() const {return nodes;};
 
     /**

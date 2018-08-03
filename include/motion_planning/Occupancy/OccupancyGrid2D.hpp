@@ -6,6 +6,7 @@
 
 #include <png.h>
 
+#include "motion_planning/State/Pose2D.hpp"
 #include "motion_planning/Occupancy/Occupancy.hpp"
 #include "motion_planning/Steer/Steer.hpp"
 
@@ -48,9 +49,29 @@ public:
     double occupancyProbability(int cell) const;
     double occupancyProbability(int row, int col) const;
 
+    inline bool isFree(const State * state) const {
+        return occupancyProbability(state) < freeThreshold(); }
+    inline bool isOccupied(const State * state) const {
+        return occupancyProbability(state) > occupiedThreshold(); }
+    inline bool isUnknown(const State * state) const {
+        return (not isFree(state)) and (not isOccupied(state)); }
+    inline bool isFree(int row, int col) const {
+        return occupancyProbability(row, col) < freeThreshold(); }
+    inline bool isFree(int cell) const {
+        return occupancyProbability(cell) < freeThreshold(); }
+    inline bool isOccupied(int row, int col) const {
+        return occupancyProbability(row, col) > occupiedThreshold(); }
+    inline bool isOccupied(int cell) const {
+        return occupancyProbability(cell) > occupiedThreshold(); }
+    inline bool isUnknown(int row, int col) const {
+        return (not isFree(row, col)) and (not isOccupied(row, col)); }
+    inline bool isUnknown(int cell) const {
+        return (not isFree(cell)) and (not isOccupied(cell)); }
+
     int rowColToCell(int row, int col) const;
     void stateToRowCol(const Pose2D * state, int & row, int & col) const;
     void xyToRowCol(double x, double y, int & row, int & col) const;
+    void rowColToXY(int row, int col, double & x, double & y) const;
 
     bool isSteerFree(Steer<State> * steer) const;
     double freeThreshold() const {return 0.4;};

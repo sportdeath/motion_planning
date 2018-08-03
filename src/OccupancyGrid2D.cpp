@@ -177,6 +177,14 @@ void OccupancyGrid2D<Pose2D>::stateToRowCol(const Pose2D * state, int & row, int
 }
 
 template<class State>
+void OccupancyGrid2D<State>::rowColToXY(int row, int col, double & x, double & y) const {
+    double x_ = col * resolution;
+    double y_ = row * resolution;
+    x = x_ * cos(-origin.theta) - y_ * sin(-origin.theta) + origin.x;
+    y = x_ * sin(-origin.theta) + y_ * cos(-origin.theta) + origin.y;
+}
+
+template<class State>
 void OccupancyGrid2D<State>::xyToRowCol(double x, double y, int & row, int & col) const {
     // Translate the state by the origin
     double x_trans = x - origin.x;
@@ -193,10 +201,9 @@ void OccupancyGrid2D<State>::xyToRowCol(double x, double y, int & row, int & col
 
 template<>
 void OccupancyGrid2D<Pose2D>::randomState(Pose2D * state) {
-    double x = colDistribution(generator) * resolution;
-    double y = rowDistribution(generator) * resolution;
-    state -> x = x * cos(-origin.theta) - y * sin(-origin.theta) + origin.x;
-    state -> y = x * sin(-origin.theta) + y * cos(-origin.theta) + origin.y;
+    int col = colDistribution(generator);
+    int row = rowDistribution(generator);
+    rowColToXY(row, col, state -> x, state -> y);
     state -> theta = thetaDistribution(generator);
 }
 

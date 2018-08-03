@@ -24,7 +24,6 @@ int main() {
         &steer,
         &classroom,
         sampleFree.sampleFunction(),
-        std::bind(&OccupancyGrid2D<Pose2D>::isUnknown, classroom, std::placeholders::_1),
         start,
         searchRadius);
 

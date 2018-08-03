@@ -14,13 +14,11 @@ RRTStar<State>::RRTStar(
         Steer<State> * steer_, 
         const Occupancy<State> * occupancy_, 
         const std::function<State(void)> sampleState_,
-        const std::function<bool(const State *)> isGoal_,
         const State & start,
         double searchRadius_) :
     steer(steer_),
     occupancy(occupancy_),
     sampleState(sampleState_),
-    isGoal(isGoal_),
     searchRadius(searchRadius_)
 {
     // Add the root node
@@ -178,10 +176,6 @@ typename RRTStar<State>::Node * RRTStar<State>::iterate() {
     if (randNode != NULL) {
         // If the node has been added, perform rewire
         rewire(randNode);
-        // Check if the added node is in the goal set
-        if (isGoal(&randNode -> state)) {
-            goalNodes.push_back(randNode);
-        }
     }
 
     return randNode;
