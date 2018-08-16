@@ -3,6 +3,7 @@
 #include <cmath>
 #include <limits>
 #include <chrono>
+#include <stack>
 
 #include <png.h>
 
@@ -10,6 +11,7 @@
 #include "motion_planning/Steer/Steer.hpp"
 #include "motion_planning/Occupancy/Occupancy.hpp"
 #include "motion_planning/Occupancy/OccupancyGrid2D.hpp"
+#include "motion_planning/Occupancy/DistanceTransform.hpp"
 
 template<class State>
 OccupancyGrid2D<State>::OccupancyGrid2D() {
@@ -18,8 +20,43 @@ OccupancyGrid2D<State>::OccupancyGrid2D() {
 }
 
 template<class State>
-double OccupancyGrid2D<State>::intToProbability(uint8_t i) {
+double OccupancyGrid2D<State>::distanceTransform(const State * state) const {
+    int row, col;
+    stateToRowCol(state, row, col);
+    int cell = rowColToCell(row, col);
+
+    return dt[cell];
+}
+
+template<class State>
+double OccupancyGrid2D<State>::intToProbability(uint8_t i) const {
     return 1. - i/((double) std::numeric_limits<uint8_t>::max());
+}
+
+template<class State>
+void OccupancyGrid2D<State>::setObjectRadius(double objectRadius, double searchBuffer) {
+    bufferedRadius = objectRadius + searchBuffer;
+    minBufferDistance = 2 * std::sqrt(searchBuffer * (searchBuffer + 2 * objectRadius));
+}
+
+template<class State>
+void OccupancyGrid2D<State>::computeDistanceTransform() {
+    dt = std::vector<double>(map.size());
+    for (size_t i = 0; i < map.size(); i++) {
+        if (not isFree(i)) {
+            dt[i] = 0;
+        } else {
+            dt[i] = 99999;
+        }
+    }
+
+    DistanceTransform transfomer(std::max(width, height));
+    transfomer.distance2D(dt, width, height);
+
+    // Update to account for the resolution of the map
+    for (size_t i = 0; i < dt.size(); i++) {
+        dt[i] *= resolution;
+    }
 }
 
 template<class State>
@@ -38,6 +75,8 @@ bool OccupancyGrid2D<State>::setMap(const uint8_t * data, size_t width, size_t h
         map[i] = intToProbability(data[i]);
     }
 
+    computeDistanceTransform();
+
     return true;
 }
 
@@ -54,6 +93,7 @@ bool OccupancyGrid2D<State>::setMap(const int8_t * data, size_t width, size_t he
         }
         map[i] = element;
     }
+    computeDistanceTransform();
 
     return true;
 }
@@ -123,6 +163,8 @@ bool OccupancyGrid2D<State>::setMap(std::string mapPngFilename, double resolutio
     // Close the file
     fclose(mapPngFile);
 
+    computeDistanceTransform();
+
     return true;
 }
 
@@ -159,16 +201,44 @@ double OccupancyGrid2D<State>::occupancyProbability(const State * state) const {
 
 template<class State>
 bool OccupancyGrid2D<State>::isSteerFree(Steer<State> * steer) const {
-    // Sample the state at the resolution of the map
-    std::vector<State> samples = steer -> sample(resolution);
+    Pose2D pose;
 
-    bool isFree_ = true;
+    // Check if the distance from both end points good
+    pose = steer -> interpolate(0);
+    if (distanceTransform(&pose) < bufferedRadius)
+        return false;
 
-    for (auto sample = samples.begin(); sample < samples.end(); sample++) {
-        isFree_ &= Occupancy<State>::isFree(&*sample);
+    pose = steer -> interpolate(1);
+    if (distanceTransform(&pose) < bufferedRadius)
+        return false;
+
+    double totalDistance = steer -> cost();
+    
+    std::stack<int> stack;
+    stack.push(1);
+    while (not stack.empty()) {
+        // Pop off of the stack
+        int i = stack.top();
+        stack.pop();
+
+        // Compute the location along the line
+        double power = std::pow(2., std::floor(std::log2(i)));
+
+        double numerator = 2 * (i - power) + 1;
+        double denominator = 2 * power;
+
+        double t = numerator/denominator;
+
+        pose = steer -> interpolate(t);
+        if (distanceTransform(&pose) < bufferedRadius) {
+            return false;
+        } else if (totalDistance/denominator > minBufferDistance) {
+            stack.push(2 * i);
+            stack.push(2 * i + 1);
+        }
     }
 
-    return isFree_;
+    return true;
 }
 
 template<>

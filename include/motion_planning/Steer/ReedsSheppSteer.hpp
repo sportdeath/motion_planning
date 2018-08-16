@@ -84,7 +84,6 @@ public:
     /** \brief Turning radius */
     double rho_;
 
-protected:
     void interpolate(double q0[3], ReedsSheppPath &path, double seg, double q[3]);
 };
 
@@ -108,6 +107,7 @@ public:
     bool steer(const Pose2D * start, const Pose2D * end);
 
     std::vector<Pose2D> sample(double resolution);
+    Pose2D interpolate(double t);
 
     double cost();
     double lowerBoundCost(const Pose2D * state, const Pose2D * end) const;

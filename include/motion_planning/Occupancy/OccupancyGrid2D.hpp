@@ -13,10 +13,14 @@
 template <class State>
 class OccupancyGrid2D : public Occupancy<State> {
 private:
+    double bufferedRadius;
+    double minBufferDistance;
+
     double resolution;
     State origin;
 
     std::vector<double> map;
+    std::vector<double> dt; // distance transform
     size_t width;
     size_t height;
 
@@ -25,14 +29,18 @@ private:
     std::uniform_real_distribution<double> rowDistribution;
     std::uniform_real_distribution<double> thetaDistribution;
 
-    double intToProbability(uint8_t i);
+    double intToProbability(uint8_t i) const;
     bool initializeMap(size_t width, size_t height, double resolution_, State origin_);
+    void computeDistanceTransform();
 
 public:
     OccupancyGrid2D();
     size_t getWidth() {return width;};
     size_t getHeight() {return height;};
     double getResolution() {return resolution;};
+
+    void setObjectRadius(double objectRadius, double bufferRadius);
+    double distanceTransform(const State * state) const;
 
     /**
      * Set the map of the occupancy grid to a png.

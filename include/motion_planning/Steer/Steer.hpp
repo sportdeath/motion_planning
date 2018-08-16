@@ -22,6 +22,8 @@ public:
      */
     virtual std::vector<State> sample(double resolution) = 0;
 
+    virtual State interpolate(double t) = 0;
+
     /**
      * Returns the cost of the steer.
      */
