@@ -24,7 +24,7 @@ class RRTStarTest : public ::testing::Test {
             double resolution = 0.05;
             Pose2D origin = {.x=0, .y=0, .theta=0};
             classroom.setMap("maps/classroom_incomplete.png", resolution, origin);
-
+            classroom.setObjectRadius(0.44, 0.01);
         }
 };
 

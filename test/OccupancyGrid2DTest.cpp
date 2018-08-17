@@ -18,6 +18,7 @@ TEST_F(OccupancyGrid2DTest, TestOccupancyProbability) {
     double resolution = 1.;
     Pose2D origin = {.x=0, .y=0, .theta=0};
     occ.setMap(tiny, resolution, origin);
+    occ.setObjectRadius(0.44, 0.01);
 
     Pose2D query = {.x=0, .y=0, .theta=0};
     ASSERT_EQ(0, occ.occupancyProbability(&query));
@@ -48,6 +49,7 @@ TEST_F(OccupancyGrid2DTest, SampleFreeRotated) {
     std::vector<int8_t> data(width*height, 0);
     Pose2D origin = {.x=-20, .y=4, .theta=-1.1};
     occ.setMap(data, width, height, resolution, origin);
+    occ.setObjectRadius(0.44, 0.01);
 
     Pose2D state;
     for (int i = 0; i < 100; i++) {
@@ -65,6 +67,7 @@ TEST_F(OccupancyGrid2DTest, InitializeWithBytes) {
     double resolution = 1.;
     Pose2D origin = {.x=0, .y=0, .theta=0};
     occ.setMap(data, 3, 2, resolution, origin);
+    occ.setObjectRadius(0.44, 0.01);
 
     Pose2D query = {.x=0, .y=0, .theta=0};
     ASSERT_EQ(1, occ.occupancyProbability(&query)); // 0
@@ -89,6 +92,7 @@ TEST_F(OccupancyGrid2DTest, InitializeWithInts) {
     double resolution = 1.;
     Pose2D origin = {.x=0, .y=0, .theta=0};
     occ.setMap(data, 2, 3, resolution, origin);
+    occ.setObjectRadius(0.44, 0.01);
 
     Pose2D query = {.x=0, .y=0, .theta=0};
     ASSERT_EQ(0.5, occ.occupancyProbability(&query)); // -1
