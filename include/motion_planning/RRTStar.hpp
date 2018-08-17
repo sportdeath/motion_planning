@@ -21,7 +21,7 @@ public:
 private:
     Steer<State> * steer;
     const Occupancy<State> * occupancy;
-    const std::function<State(void)> sampleState;
+    std::function<State(void)> sampleState;
 
     double searchRadius;
 
@@ -36,6 +36,7 @@ private:
     void updateCosts(Node * node);
 
 public:
+    RRTStar() {};
     /** 
      * Initialize the RRTStar algorithm.
      *
