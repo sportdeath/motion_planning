@@ -103,15 +103,18 @@ State MixedSampler<State>::sample() {
     return samplers[0] -> sample();
 }
 
-RadialSampler::RadialSampler(Occupancy<Pose2D> * occupancy_, double radius_) :
+RadialSampler::RadialSampler(Occupancy<Pose2D> * occupancy_, double radius_, double thetaVariance_) :
     occupancy(occupancy_),
-    radius(radius_)
+    radius(radius_),
+    thetaVariance(thetaVariance_)
 {
     generator.seed(std::chrono::system_clock::now().time_since_epoch().count());
 }
 
 void RadialSampler::setCenter(Pose2D * state) {
-    center = *state;
+    center.x = state -> x;
+    center.y = state -> y;
+    center.theta = state -> theta;
 }
 
 Pose2D RadialSampler::sample() {
@@ -119,12 +122,12 @@ Pose2D RadialSampler::sample() {
     Pose2D state;
 
     while (true) {
-        double r = radius * sqrt(realDistribution(generator));
-        double phi = 2 * M_PI * realDistribution(generator);
+        double r = radius * sqrt(normalDistribution(generator));
+        double phi = 2 * M_PI * normalDistribution(generator);
 
         state.x = r * cos(phi) + center.x;
         state.y = r * sin(phi) + center.y;
-        state.theta = 2 * M_PI * realDistribution(generator);
+        state.theta = thetaVariance * normalDistribution(generator) + center.theta;
 
         if (occupancy -> isFree(&state)) {
             return state;
