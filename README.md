@@ -148,3 +148,12 @@ Or you could sample it as a list of states:
     // The path from the root to someNode
     // sampled every 0.1 meters
     std::vector<Pose2D> path = rrt.samplePath(&someNode, 0.1);
+
+### TODO
+
+- Add proper ROS installation for inclusion in other packages.
+- Make ROS node parameterized.
+- Fix bug on edge of map.
+- Document distance transform
+- Add images/gif to README
+- Add line steering function.
