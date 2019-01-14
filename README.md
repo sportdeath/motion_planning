@@ -1,16 +1,6 @@
-A lightweight implementation of the RRT\* algorithm.
-
-## Installation
-
-Clone this library with git submodules:
-
-    git clone --recurse-submodules git@github.mit.edu:tfh/motion_planning.git
-
-Or add the submodules after cloning
-
-    git clone --recurse-submodules git@github.mit.edu:tfh/motion_planning.git
-    git submodule init
-    git submodule update
+A lightweight, optimized C++ implementation of the RRT\* algorithm.
+This package is compatible with the robotic operating system (ROS),
+but it can also be built as a standalone package.
 
 ## Dependencies
 
@@ -32,13 +22,34 @@ Or to install manually:
     make check
     make install
 
-## Building
+## Standalone Build
 
+If you don't want to install this library with ROS, simply clone the library and build using CMake.
+
+    git clone git@github.com:sportdeath/motion_planning.git
     cd motion_planning
     mkdir build
     cd build
     cmake ..
     make
+
+If you want to build the tests, you will need the Google Test submodule.
+You can fetch it as you clone:
+
+    git clone --recurse-submodules git@github.com:sportdeath/motion_planning.git
+
+Or get it afterwards:
+
+    git submodule update --init --recursive
+
+## ROS Build
+
+To build as a ROS package, use the ```catkin``` system:
+
+    cd catkin_ws/src
+    git clone git@github.com:sportdeath/motion_planning.git
+    cd catkin_ws
+    catkin_make
 
 ## Usage
 
