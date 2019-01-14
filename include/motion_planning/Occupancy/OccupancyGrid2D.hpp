@@ -55,7 +55,7 @@ public:
 
     double occupancyProbability(const State * state) const;
     double occupancyProbability(int cell) const;
-    double occupancyProbability(int row, int col) const;
+    double occupancyProbability(size_t row, size_t col) const;
 
     inline bool isFree(const State * state) const {
         return occupancyProbability(state) < freeThreshold(); }
@@ -63,23 +63,23 @@ public:
         return occupancyProbability(state) > occupiedThreshold(); }
     inline bool isUnknown(const State * state) const {
         return (not isFree(state)) and (not isOccupied(state)); }
-    inline bool isFree(int row, int col) const {
+    inline bool isFree(size_t row, size_t col) const {
         return occupancyProbability(row, col) < freeThreshold(); }
     inline bool isFree(int cell) const {
         return occupancyProbability(cell) < freeThreshold(); }
-    inline bool isOccupied(int row, int col) const {
+    inline bool isOccupied(size_t row, size_t col) const {
         return occupancyProbability(row, col) > occupiedThreshold(); }
     inline bool isOccupied(int cell) const {
         return occupancyProbability(cell) > occupiedThreshold(); }
-    inline bool isUnknown(int row, int col) const {
+    inline bool isUnknown(size_t row, size_t col) const {
         return (not isFree(row, col)) and (not isOccupied(row, col)); }
     inline bool isUnknown(int cell) const {
         return (not isFree(cell)) and (not isOccupied(cell)); }
 
-    int rowColToCell(int row, int col) const;
-    void stateToRowCol(const Pose2D * state, int & row, int & col) const;
-    void xyToRowCol(double x, double y, int & row, int & col) const;
-    void rowColToXY(int row, int col, double & x, double & y) const;
+    int rowColToCell(size_t row, size_t col) const;
+    void stateToRowCol(const Pose2D * state, size_t & row, size_t & col) const;
+    void xyToRowCol(double x, double y, size_t & row, size_t & col) const;
+    void rowColToXY(size_t row, size_t col, double & x, double & y) const;
 
     bool isSteerFree(Steer<State> * steer) const;
     double freeThreshold() const {return 0.4;};

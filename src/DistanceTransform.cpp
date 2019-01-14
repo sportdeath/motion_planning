@@ -30,7 +30,7 @@ void DistanceTransform::distanceSquared1D(const std::vector<double> & input, std
 
     // Compute the lower envelope over all grid cells
     double intersectionPoint;
-    for (int idx = 1; idx < input.size(); idx++) {
+    for (size_t idx = 1; idx < input.size(); idx++) {
         numParabolas++;
         do {
             numParabolas--;
@@ -63,7 +63,7 @@ void DistanceTransform::distanceSquared1D(const std::vector<double> & input, std
     }
 
     int parabola = 0;
-    for (int idx = 0; idx < input.size(); idx++) {
+    for (size_t idx = 0; idx < input.size(); idx++) {
         // Find the parabola corresponding to the index
         while (parabolaBoundaries[parabola + 1] < idx) parabola++;
 

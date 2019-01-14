@@ -61,6 +61,8 @@ public:
      */
     Node * iterate();
 
+    const Node & root() const {return nodes.front();};
+
     const std::list<Node> & getNodes() const {return nodes;};
 
     /**

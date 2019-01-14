@@ -69,9 +69,9 @@ public:
 class RadialSampler : public StateSampler<Pose2D> {
 private:
     Pose2D center;
+    Occupancy<Pose2D> * occupancy;
     double radius;
     double thetaVariance;
-    Occupancy<Pose2D> * occupancy;
     std::default_random_engine generator;
     std::normal_distribution<double> normalDistribution;
     
