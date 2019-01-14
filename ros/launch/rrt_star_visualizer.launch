@@ -1,0 +1,5 @@
+<launch>
+    <arg name="map" default="$(find motion_planning)/test/maps/classroom_incomplete.yaml"/>
+    <node pkg="map_server" name="map_server" type="map_server" args="$(arg map)" />
+    <node pkg="motion_planning" name="rrt_star_visualizer" type="rrt_star_visualizer" output="screen" />
+</launch>

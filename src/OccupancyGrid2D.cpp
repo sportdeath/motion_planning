@@ -267,6 +267,11 @@ void OccupancyGrid2D<State>::xyToRowCol(double x, double y, size_t & row, size_t
     // Discretize the state into a cell
     col = std::floor(x_rot/resolution);
     row = std::floor(y_rot/resolution);
+
+    // Clip to the edge of the map
+    size_t zero = 0;
+    col = std::min(std::max(col, zero), width - 1);
+    row = std::min(std::max(row, zero), height - 1);
 }
 
 template<>
