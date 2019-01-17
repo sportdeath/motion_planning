@@ -21,18 +21,12 @@ public:
      */
     virtual std::vector<State> sample(double resolution) = 0;
 
-    /**
-     * Return a point that is a fraction of the cost
-     * along the steering path.
-     *
-     * For example, if t=0.5 then the cost from the start
-     * to the interpolated state should equal the cost from
-     * the interpolated state to the end.
-     */
-    virtual State interpolate(double t) = 0;
 
     /**
      * Returns the cost of the steer.
+     *
+     * Any real valued function that is non-decreasing
+     * over the steering path.
      */
     virtual double cost() = 0;
 
@@ -40,11 +34,19 @@ public:
      * Returns the physical distance of the steer.
      * Necessary for collision checking
      *
-     * This is not the same as the cost which can be
-     * and real valued function that increases over the
-     * span of the steering path.
+     * This is not the same as the cost.
      */
     virtual double distance() = 0;
+
+    /**
+     * Return a point that is a fraction of the total distance
+     * along the steering path.
+     *
+     * For example, if t=0.5 then the distance from the start
+     * to the interpolated state should equal the distance from
+     * the interpolated state to the end.
+     */
+    virtual State interpolateDistance(double t) = 0;
 
     /**
      * Return a lower bound on the cost between

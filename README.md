@@ -158,5 +158,3 @@ Or you could sample it as a list of states:
 - Document distance transform
 - Add images/gif to README
 - Add line steering function.
-- Fix cost bug in occupancy 2d
-- Fix profile bug

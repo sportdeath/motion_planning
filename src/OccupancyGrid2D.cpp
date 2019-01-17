@@ -17,6 +17,7 @@ template<class State>
 OccupancyGrid2D<State>::OccupancyGrid2D() {
     thetaDistribution = std::uniform_real_distribution<double>(-M_PI, M_PI);
     generator.seed(std::chrono::system_clock::now().time_since_epoch().count());
+    setObjectRadius(0., 0.01);
 }
 
 template<class State>
@@ -37,7 +38,7 @@ template<class State>
 void OccupancyGrid2D<State>::setObjectRadius(double objectRadius, double searchBuffer) {
     bufferedRadius = objectRadius + searchBuffer;
     // The minimum distance necessary to check between adjacent points
-    minBufferDistance = 2 * std::sqrt(searchBuffer * (searchBuffer + 2 * objectRadius));
+    collisionCheckingResolution = 2 * std::sqrt(searchBuffer * (searchBuffer + 2 * objectRadius));
 }
 
 template<class State>
@@ -204,12 +205,12 @@ template<class State>
 bool OccupancyGrid2D<State>::isSteerFree(Steer<State> * steer) const {
     Pose2D pose;
 
-    // Check if the distance from both end points good
-    pose = steer -> interpolate(0);
-    if (distanceTransform(&pose) < bufferedRadius)
+    // Check if the distance from both end points is good
+    pose = steer -> interpolateDistance(0);
+    if (distanceTransform(&pose) <= bufferedRadius)
         return false;
-    pose = steer -> interpolate(1);
-    if (distanceTransform(&pose) < bufferedRadius)
+    pose = steer -> interpolateDistance(1);
+    if (distanceTransform(&pose) <= bufferedRadius)
         return false;
 
     double totalDistance = steer -> distance();
@@ -231,10 +232,10 @@ bool OccupancyGrid2D<State>::isSteerFree(Steer<State> * steer) const {
 
         double t = numerator/denominator;
 
-        pose = steer -> interpolate(t);
-        if (distanceTransform(&pose) < bufferedRadius) {
+        pose = steer -> interpolateDistance(t);
+        if (distanceTransform(&pose) <= bufferedRadius) {
             return false;
-        } else if (totalDistance/denominator > minBufferDistance) {
+        } else if (totalDistance/denominator > collisionCheckingResolution) {
             stack.push(2 * i);
             stack.push(2 * i + 1);
         }

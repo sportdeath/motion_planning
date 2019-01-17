@@ -14,7 +14,7 @@ template <class State>
 class OccupancyGrid2D : public Occupancy<State> {
 private:
     double bufferedRadius;
-    double minBufferDistance;
+    double collisionCheckingResolution;
 
     double resolution;
     State origin;
@@ -39,7 +39,15 @@ public:
     size_t getHeight() {return height;};
     double getResolution() {return resolution;};
 
-    void setObjectRadius(double objectRadius, double bufferRadius);
+    /**
+     * We assume the robot is a circle centered at the pose.
+     * 
+     * @param objectRadius The radius of the object.
+     * @param searchBuffer A small value used to increase the search
+     * radius. As this value approaches zero the number of collision
+     * checks that need to be made will go to infinity.
+     */
+    void setObjectRadius(double objectRadius, double searchBuffer);
     double distanceTransform(const State * state) const;
 
     /**

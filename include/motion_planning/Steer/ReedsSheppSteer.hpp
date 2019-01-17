@@ -107,10 +107,10 @@ public:
     bool steer(const Pose2D * start, const Pose2D * end);
 
     std::vector<Pose2D> sample(double resolution);
-    Pose2D interpolate(double t);
 
     double cost();
     double distance();
+    Pose2D interpolateDistance(double t);
     double lowerBoundCost(const Pose2D * state, const Pose2D * end) const;
 };
 

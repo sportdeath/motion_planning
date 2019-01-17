@@ -69,7 +69,7 @@ int ReedsSheppSteer::sampleCallback(double q[3], void * user_data) {
     return 0;
 }
 
-Pose2D ReedsSheppSteer::interpolate(double t) {
+Pose2D ReedsSheppSteer::interpolateDistance(double t) {
     double qnew[3] = {};
     space.interpolate(start, path, (t * cost())/space.rho_, qnew);
     Pose2D pose = {.x=qnew[0], .y=qnew[1], .theta=qnew[2]};

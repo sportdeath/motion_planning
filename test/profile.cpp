@@ -14,8 +14,9 @@ int main() {
     double resolution = 0.05;
     Pose2D origin = {.x=0, .y=0, .theta=0};
     classroom.setMap("maps/classroom_incomplete.png", resolution, origin);
+    classroom.setObjectRadius(0.1, 0.01);
 
-    Pose2D start = {.x=1, .y=1, .theta=0};
+    Pose2D start = {.x=5, .y=3, .theta=0};
     double searchRadius = 5.;
 
     UniformSampler<Pose2D> sampleFree(&classroom);
