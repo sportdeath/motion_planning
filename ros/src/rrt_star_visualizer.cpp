@@ -141,6 +141,15 @@ public:
                 treePub.publish(RosUtils::treeToRos(tree));
             }
         }
+
+        // Compute the average path length
+        // to any node in the tree
+        double averagePathLength = 0;
+        for (const RRTStar<Pose2D>::Node & node : rrt.getNodes()) {
+            averagePathLength += node.cost/(double)rrt.getNodes().size();
+        }
+        std::cout << "Number of nodes: " << rrt.getNodes().size() << std::endl;
+        std::cout << "Average path length to node: " << averagePathLength << std::endl;
     }
 
     /**

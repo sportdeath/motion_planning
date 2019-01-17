@@ -85,6 +85,8 @@ Or frome a grayscale PNG:
     ...
     occ.setMap("maps/tiny.png", mapResolution, mapOrigin);
 
+The occupancy grid includes a distance transform.
+
 
 ### Sampling Function
 
@@ -153,7 +155,8 @@ Or you could sample it as a list of states:
 
 - Add proper ROS installation for inclusion in other packages.
 - Make ROS node parameterized.
-- Fix bug on edge of map.
 - Document distance transform
+- Fix occupancy unit test
 - Add images/gif to README
 - Add line steering function.
+- Fix cost bug in occupancy 2d

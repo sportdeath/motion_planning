@@ -36,6 +36,7 @@ double OccupancyGrid2D<State>::intToProbability(uint8_t i) const {
 template<class State>
 void OccupancyGrid2D<State>::setObjectRadius(double objectRadius, double searchBuffer) {
     bufferedRadius = objectRadius + searchBuffer;
+    // The minimum distance necessary to check between adjacent points
     minBufferDistance = 2 * std::sqrt(searchBuffer * (searchBuffer + 2 * objectRadius));
 }
 
@@ -51,7 +52,7 @@ void OccupancyGrid2D<State>::computeDistanceTransform() {
     }
 
     DistanceTransform transfomer(std::max(width, height));
-    transfomer.distance2D(dt, width, height);
+    transfomer.distance2D(dt, width, height, 0);
 
     // Update to account for the resolution of the map
     for (size_t i = 0; i < dt.size(); i++) {
@@ -207,13 +208,14 @@ bool OccupancyGrid2D<State>::isSteerFree(Steer<State> * steer) const {
     pose = steer -> interpolate(0);
     if (distanceTransform(&pose) < bufferedRadius)
         return false;
-
     pose = steer -> interpolate(1);
     if (distanceTransform(&pose) < bufferedRadius)
         return false;
 
     double totalDistance = steer -> cost();
     
+    // Recursively look at fractions of the path
+    // 1/2, 1/4, 3/4, 1/8 ...
     std::stack<int> stack;
     stack.push(1);
     while (not stack.empty()) {

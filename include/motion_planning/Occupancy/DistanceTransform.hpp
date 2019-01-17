@@ -12,7 +12,7 @@ public:
 
     void distanceSquared1D(const std::vector<double> & input, std::vector<double> & output);
 
-    void distanceSquared2D(std::vector<double> & input, int width, int height);
+    void distanceSquared2D(std::vector<double> & input, int width, int height, int boundaryValue=99999);
 
-    void distance2D(std::vector<double> & input, int width, int height);
+    void distance2D(std::vector<double> & input, int width, int height, int boundaryValue=99999);
 };

@@ -7,8 +7,8 @@
 
 DistanceTransform::DistanceTransform(int maxSize) {
     // Initialize vectors to store indices and boundaries
-    parabolaIdxs = std::vector<int>(maxSize);
-    parabolaBoundaries = std::vector<double>(maxSize + 1);
+    parabolaIdxs = std::vector<int>(maxSize + 2);
+    parabolaBoundaries = std::vector<double>(maxSize + 3);
 }
 
 void DistanceTransform::distanceSquared1D(const std::vector<double> & input, std::vector<double> & output) {
@@ -73,36 +73,40 @@ void DistanceTransform::distanceSquared1D(const std::vector<double> & input, std
     }
 }
 
-void DistanceTransform::distanceSquared2D(std::vector<double> & input, int width, int height) {
+void DistanceTransform::distanceSquared2D(std::vector<double> & input, int width, int height, int boundaryValue) {
     // Transform along the columns
-    std::vector<double> colVec(height);
-    std::vector<double> colDT(height);
+    std::vector<double> colVec(height + 2);
+    std::vector<double> colDT(height + 2);
     for (int col = 0; col < width; col++) {
+        colVec[0] = boundaryValue;
+        colVec[height + 1] = boundaryValue;
         for (int row = 0; row < height; row++) {
-            colVec[row] = input[row * width + col];
+            colVec[row + 1] = input[row * width + col];
         }
         distanceSquared1D(colVec, colDT);
         for (int row = 0; row < height; row++) {
-            input[row * width + col] = colDT[row];
+            input[row * width + col] = colDT[row + 1];
         }
     }
 
     // Transform along the rows
-    std::vector<double> rowVec(width);
-    std::vector<double> rowDT(width);
+    std::vector<double> rowVec(width + 2);
+    std::vector<double> rowDT(width + 2);
     for (int row = 0; row < height; row++) {
+        rowVec[0] = boundaryValue;
+        rowVec[width + 1] = boundaryValue;
         for (int col = 0; col < width; col++) {
-            rowVec[col] = input[row * width + col];
+            rowVec[col + 1] = input[row * width + col];
         }
         distanceSquared1D(rowVec, rowDT);
         for (int col = 0; col < width; col++) {
-            input[row * width + col] = rowDT[col];
+            input[row * width + col] = rowDT[col + 1];
         }
     }
 }
 
-void DistanceTransform::distance2D(std::vector<double> & input, int width, int height) {
-    distanceSquared2D(input, width, height);
+void DistanceTransform::distance2D(std::vector<double> & input, int width, int height, int boundaryValue) {
+    distanceSquared2D(input, width, height, boundaryValue);
     for (size_t i = 0; i < input.size(); i++) {
         input[i] = sqrt(input[i]);
     }
