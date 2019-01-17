@@ -212,7 +212,7 @@ bool OccupancyGrid2D<State>::isSteerFree(Steer<State> * steer) const {
     if (distanceTransform(&pose) < bufferedRadius)
         return false;
 
-    double totalDistance = steer -> cost();
+    double totalDistance = steer -> distance();
     
     // Recursively look at fractions of the path
     // 1/2, 1/4, 3/4, 1/8 ...

@@ -30,6 +30,16 @@ public:
     virtual double cost() = 0;
 
     /**
+     * Returns the physical distance of the steer.
+     * Necessary for collision checking
+     *
+     * This is not the same as the cost which can be
+     * and real valued function that increases over the
+     * span of the steering path.
+     */
+    virtual double distance() = 0;
+
+    /**
      * Return a lower bound on the cost between
      * two states. This should be easier to compute
      * than the actual cost.

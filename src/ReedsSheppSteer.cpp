@@ -97,6 +97,10 @@ double ReedsSheppSteer::cost() {
     return space.rho_ * path.length();
 }
 
+double ReedsSheppSteer::distance() {
+    return cost();
+}
+
 double ReedsSheppSteer::lowerBoundCost(const Pose2D * start, const Pose2D * end) const {
     double x = (start -> x - end -> x);
     double y = (start -> y - end -> y);

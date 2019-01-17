@@ -110,6 +110,7 @@ public:
     Pose2D interpolate(double t);
 
     double cost();
+    double distance();
     double lowerBoundCost(const Pose2D * state, const Pose2D * end) const;
 };
 
