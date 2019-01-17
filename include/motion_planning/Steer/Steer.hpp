@@ -1,5 +1,4 @@
-#ifndef STEER_HPP
-#define STEER_HPP
+#pragma once
 
 #include <vector>
 
@@ -22,6 +21,14 @@ public:
      */
     virtual std::vector<State> sample(double resolution) = 0;
 
+    /**
+     * Return a point that is a fraction of the cost
+     * along the steering path.
+     *
+     * For example, if t=0.5 then the cost from the start
+     * to the interpolated state should equal the cost from
+     * the interpolated state to the end.
+     */
     virtual State interpolate(double t) = 0;
 
     /**
@@ -43,8 +50,10 @@ public:
      * Return a lower bound on the cost between
      * two states. This should be easier to compute
      * than the actual cost.
+     *
+     * For example, for a Dubin's car moving at unit speed,
+     * a lower bound on the cost is the distance between
+     * two states.
      */
     virtual double lowerBoundCost(const State * sate, const State * end) const = 0;
 };
-
-#endif // STEER_HPP
