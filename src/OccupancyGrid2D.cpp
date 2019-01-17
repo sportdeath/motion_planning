@@ -252,8 +252,8 @@ template<class State>
 void OccupancyGrid2D<State>::rowColToXY(size_t row, size_t col, double & x, double & y) const {
     double x_ = col * resolution;
     double y_ = row * resolution;
-    x = x_ * cos(-origin.theta) - y_ * sin(-origin.theta) + origin.x;
-    y = x_ * sin(-origin.theta) + y_ * cos(-origin.theta) + origin.y;
+    x = x_ * cos(origin.theta) - y_ * sin(origin.theta) + origin.x;
+    y = x_ * sin(origin.theta) + y_ * cos(origin.theta) + origin.y;
 }
 
 template<class State>
@@ -263,8 +263,8 @@ void OccupancyGrid2D<State>::xyToRowCol(double x, double y, size_t & row, size_t
     double y_trans = y - origin.y;
 
     // Rotate the state into the map
-    double x_rot = x_trans * cos(origin.theta) - y_trans * sin(origin.theta);
-    double y_rot = x_trans * sin(origin.theta) + y_trans * cos(origin.theta);
+    double x_rot = x_trans * cos(-origin.theta) - y_trans * sin(-origin.theta);
+    double y_rot = x_trans * sin(-origin.theta) + y_trans * cos(-origin.theta);
 
     // Discretize the state into a cell
     col = std::floor(x_rot/resolution);

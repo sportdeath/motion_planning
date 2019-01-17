@@ -156,7 +156,6 @@ Or you could sample it as a list of states:
 - Add proper ROS installation for inclusion in other packages.
 - Make ROS node parameterized.
 - Document distance transform
-- Fix occupancy unit test
 - Add images/gif to README
 - Add line steering function.
 - Fix cost bug in occupancy 2d
