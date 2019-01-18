@@ -153,8 +153,9 @@ Or you could sample it as a list of states:
 
 ### TODO
 
-- Add proper ROS installation for inclusion in other packages.
+- make config.cmake file
 - Make ROS node parameterized.
 - Document distance transform
+- Document profiling
 - Add images/gif to README
 - Add line steering function.

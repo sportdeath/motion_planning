@@ -26,6 +26,14 @@ add_library(${PROJECT_NAME} ${SRC_FILES})
 target_link_libraries(${PROJECT_NAME} ${LIBS})
 set(LIBS ${LIBS} ${PROJECT_NAME})
 
+# Install the library to CMAKE_INSTALL_PREFIX
+# which defaults to /usr/local
+install(TARGETS ${PROJECT_NAME}
+        DESTINATION lib)
+install(DIRECTORY include/${PROJECT_NAME}
+        DESTINATION include
+        FILES_MATCHING PATTERN "*.hpp")
+
 ######################################
 # < End compile the library
 ######################################
@@ -79,7 +87,11 @@ if(DEFINED CATKIN_DEVEL_PREFIX)
     tf2_geometry_msgs)
 
   # Include catkin_libraries
-  catkin_package()
+  catkin_package(
+      INCLUDE_DIRS include
+      LIBRARIES ${PROJECT_NAME}
+      DEPS ${DEPS}
+  )
   set(LIBS ${LIBS} ${catkin_LIBRARIES})
   set(DEPS ${DEPS} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
   include_directories(include ${catkin_INCLUDE_DIRS})
@@ -94,6 +106,14 @@ if(DEFINED CATKIN_DEVEL_PREFIX)
   endforeach()
 
   # Install the library
+  install(TARGETS ${PROJECT_NAME} ${NODE_SRC_FILES}
+      ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+      LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+      RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+  )
+  install(DIRECTORY include/${PROJECT_NAME}/
+      DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+  )
 endif()
 
 ######################################
