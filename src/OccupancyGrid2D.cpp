@@ -53,7 +53,7 @@ void OccupancyGrid2D<State>::computeDistanceTransform() {
     }
 
     DistanceTransform transfomer(std::max(width, height));
-    transfomer.distance2D(dt, width, height, 0);
+    transfomer.distance2D(dt, width, height, -1);
 
     // Update to account for the resolution of the map
     for (size_t i = 0; i < dt.size(); i++) {
@@ -267,14 +267,13 @@ void OccupancyGrid2D<State>::xyToRowCol(double x, double y, size_t & row, size_t
     double x_rot = x_trans * cos(-origin.theta) - y_trans * sin(-origin.theta);
     double y_rot = x_trans * sin(-origin.theta) + y_trans * cos(-origin.theta);
 
+    // Clip the 
+    x_rot = std::min(std::max(x_rot, 0.), width * resolution - 0.000001);
+    y_rot = std::min(std::max(y_rot, 0.), height * resolution - 0.000001);
+
     // Discretize the state into a cell
     col = std::floor(x_rot/resolution);
     row = std::floor(y_rot/resolution);
-
-    // Clip to the edge of the map
-    size_t zero = 0;
-    col = std::min(std::max(col, zero), width - 1);
-    row = std::min(std::max(row, zero), height - 1);
 }
 
 template<>
