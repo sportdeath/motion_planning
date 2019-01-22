@@ -38,6 +38,7 @@ public:
     size_t getWidth() {return width;};
     size_t getHeight() {return height;};
     double getResolution() {return resolution;};
+    const Pose2D & getOrigin() {return origin;};
 
     /**
      * We assume the robot is a circle centered at the pose.

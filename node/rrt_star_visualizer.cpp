@@ -13,8 +13,7 @@
 #include <motion_planning/Occupancy/OccupancyGrid2D.hpp>
 #include <motion_planning/State/Pose2D.hpp>
 #include <motion_planning/RRTStar.hpp>
-
-#include "motion_planning_ros/ros_utils.hpp"
+#include <motion_planning/ros_utils.hpp>
 
 class RRTStarVisualizer {
 

@@ -47,6 +47,21 @@ geometry_msgs::Pose poseToRos(const Pose2D & pose) {
     return p;
 }
 
+geometry_msgs::Transform poseToTransform(const Pose2D & pose) {
+    geometry_msgs::Transform t;
+    t.translation.x = pose.x;
+    t.translation.y = pose.y;
+
+    tf2::Quaternion quat;
+    quat.setEuler(0., 0., pose.theta);
+    t.rotation.x = quat.x();
+    t.rotation.y = quat.y();
+    t.rotation.z = quat.z();
+    t.rotation.w = quat.w();
+
+    return t;
+}
+
 visualization_msgs::Marker treeToRos(
     const std::vector<std::vector<Pose2D>> & tree,
     const std::vector<double> & weights = std::vector<double>(0)) {
