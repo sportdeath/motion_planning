@@ -14,6 +14,19 @@
 #include "motion_planning/Occupancy/DistanceTransform.hpp"
 
 template<class State>
+double OccupancyGrid2D<State>::entropy() const {
+  double entropy = 0;
+  for (size_t i = 0; i < map.size(); i++) {
+    double p = occupancyProbability(i);
+    if (p != 0 and p != 1) {
+      entropy += -p * std::log2(p) - (1 - p) * std::log2(1 - p);
+    }
+  }
+
+  return entropy;
+}
+
+template<class State>
 OccupancyGrid2D<State>::OccupancyGrid2D() {
     thetaDistribution = std::uniform_real_distribution<double>(-M_PI, M_PI);
     generator.seed(std::chrono::system_clock::now().time_since_epoch().count());

@@ -40,6 +40,8 @@ public:
     double getResolution() {return resolution;};
     const Pose2D & getOrigin() {return origin;};
 
+    double entropy() const;
+
     /**
      * We assume the robot is a circle centered at the pose.
      * 
